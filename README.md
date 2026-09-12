@@ -1,10 +1,9 @@
 # HN Copy Links
 
 A browser extension that puts a copy button beside every Hacker News
-submission title. One click writes three lines to the clipboard:
+submission title. One click writes both links to the clipboard:
 
 ```
-Rust in the kernel, two years on
 Article: https://example.com/rust-in-the-kernel
 HN discussion: https://news.ycombinator.com/item?id=41000001
 ```
@@ -13,7 +12,7 @@ Paste that into an AI chat and you get a summary of the article and of what
 Hacker News made of it, without hunting for the discussion page yourself.
 
 A text post such as an Ask HN thread has no separate article, so it copies as
-two lines.
+one line.
 
 ## Already copied
 

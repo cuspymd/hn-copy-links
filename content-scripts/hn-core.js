@@ -45,6 +45,8 @@
     const titleLink = row.querySelector('.titleline > a');
     if (!titleLink) return null;
 
+    // The title does not go on the clipboard. It is read because an empty one
+    // is the sign of a row that only looks like a submission.
     const title = (titleLink.textContent || '').trim();
     if (!title) return null;
 
@@ -62,14 +64,18 @@
   }
 
   /**
-   * Three lines: the title, the article, the discussion. A text post has no
-   * separate article, so it gets two - repeating the same URL under two labels
-   * would only tell the reader the two are different when they are not.
+   * Two lines: the article and the discussion. The title is left out - whatever
+   * reads the pasted text fetches both pages anyway, so the title only repeats
+   * what they already say.
+   *
+   * A text post has no separate article, so it copies as one line. Repeating
+   * the same URL under two labels would only tell the reader the two are
+   * different when they are not.
    */
   function buildCopyText(item) {
     if (!item) return '';
 
-    const lines = [item.title];
+    const lines = [];
     if (!item.isSelfPost) {
       lines.push(`${ARTICLE_LABEL}: ${item.articleUrl}`);
     }

@@ -66,29 +66,27 @@ describe('button injection', () => {
 });
 
 describe('copying', () => {
-  test('writes the three-line text for an external submission', async () => {
+  test('writes the two links for an external submission', async () => {
     await loadContentScript({ html: listPage(ROWS) });
 
     buttons()[0].click();
     await flushPromises();
 
     expect(writeText()).toHaveBeenCalledWith([
-      'A real post',
       'Article: https://example.com/a',
       'HN discussion: https://news.ycombinator.com/item?id=41000',
     ].join('\n'));
   });
 
-  test('writes two lines for an Ask HN post', async () => {
+  test('writes one link for an Ask HN post', async () => {
     await loadContentScript({ html: listPage(ROWS) });
 
     buttons()[1].click();
     await flushPromises();
 
-    expect(writeText()).toHaveBeenCalledWith([
-      'Ask HN: how do you read HN?',
-      'HN discussion: https://news.ycombinator.com/item?id=41001',
-    ].join('\n'));
+    expect(writeText()).toHaveBeenCalledWith(
+      'HN discussion: https://news.ycombinator.com/item?id=41001'
+    );
   });
 
   test('does not follow the title link the button sits inside', async () => {

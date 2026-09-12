@@ -11,11 +11,10 @@ test('puts one button in every submission title line', async ({ hnPage }) => {
   expect(rowIds).toEqual(['41000001', '41000002', '41000003']);
 });
 
-test('copies the title, the article and the discussion', async ({ hnPage }) => {
+test('copies the article and the discussion', async ({ hnPage }) => {
   await hnPage.locator(BUTTON).first().click();
 
   expect(await readClipboard(hnPage)).toBe([
-    'Rust in the kernel, two years on',
     'Article: https://example.com/rust-in-the-kernel',
     'HN discussion: https://news.ycombinator.com/item?id=41000001',
   ].join('\n'));
@@ -34,10 +33,9 @@ test('copies a discussion link even when the row says "discuss"', async ({ hnPag
 test('copies one link for a text post', async ({ hnPage }) => {
   await hnPage.locator(BUTTON).nth(2).click();
 
-  expect(await readClipboard(hnPage)).toBe([
-    'Ask HN: How do you keep up with your reading list?',
-    'HN discussion: https://news.ycombinator.com/item?id=41000003',
-  ].join('\n'));
+  expect(await readClipboard(hnPage)).toBe(
+    'HN discussion: https://news.ycombinator.com/item?id=41000003'
+  );
 });
 
 test('does not navigate when the button is clicked', async ({ hnPage }) => {

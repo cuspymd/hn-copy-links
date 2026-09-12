@@ -6,10 +6,9 @@ and the commands. For structure, read the tree.
 
 "HN Copy Links" is a cross-browser (Chrome, Firefox, Firefox for Android)
 extension that puts a copy button next to every Hacker News submission title.
-One click writes the title, the article link and the discussion link to the
-clipboard, for pasting into an AI chat. Rows already copied stay marked, so a
-list still separates into read and unread even though the titles were never
-clicked.
+One click writes the article link and the discussion link to the clipboard, for
+pasting into an AI chat. Rows already copied stay marked, so a list still
+separates into read and unread even though the titles were never clicked.
 
 ## Essential Commands
 
@@ -75,7 +74,7 @@ served from Hacker News.
 
 An Ask HN or Tell HN submission points its title at its own item page, so the
 article link and the discussion link are the same URL. `parseRow` reports that
-as `isSelfPost` and `buildCopyText` then emits two lines instead of three.
+as `isSelfPost` and `buildCopyText` then emits one line instead of two.
 Printing the same URL under two labels would tell the reader the two are
 different when they are not.
 

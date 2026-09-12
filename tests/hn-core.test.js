@@ -102,7 +102,7 @@ describe('parseRow', () => {
 });
 
 describe('buildCopyText', () => {
-  test('three lines for an external submission', () => {
+  test('two lines for an external submission', () => {
     const text = buildCopyText({
       title: 'A real post',
       articleUrl: 'https://example.com/a',
@@ -111,13 +111,23 @@ describe('buildCopyText', () => {
     });
 
     expect(text).toBe([
-      'A real post',
       'Article: https://example.com/a',
       'HN discussion: https://news.ycombinator.com/item?id=41000',
     ].join('\n'));
   });
 
-  test('two lines for a self post, rather than the same url twice', () => {
+  test('leaves the title out', () => {
+    const text = buildCopyText({
+      title: 'A real post',
+      articleUrl: 'https://example.com/a',
+      commentsUrl: 'https://news.ycombinator.com/item?id=41000',
+      isSelfPost: false,
+    });
+
+    expect(text).not.toContain('A real post');
+  });
+
+  test('one line for a self post, rather than the same url twice', () => {
     const url = 'https://news.ycombinator.com/item?id=41001';
     const text = buildCopyText({
       title: 'Ask HN: how do you read HN?',
@@ -126,7 +136,7 @@ describe('buildCopyText', () => {
       isSelfPost: true,
     });
 
-    expect(text).toBe(`Ask HN: how do you read HN?\nHN discussion: ${url}`);
+    expect(text).toBe(`HN discussion: ${url}`);
   });
 
   test('returns an empty string for no item', () => {

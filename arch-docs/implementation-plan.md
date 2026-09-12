@@ -18,14 +18,15 @@ Chrome / Firefox / Firefox for Android 지원.
 - 기사 링크: `span.titleline > a` 의 `href` 를 `new URL(href, location.href)` 로 절대화.
 - Ask HN / 텍스트 글은 기사 링크가 코멘트 페이지와 동일하다. 이때는 링크를 한 번만 넣는다.
 
-### 클립보드 형식 (기본값, 조정 가능)
+### 클립보드 형식
 ```
-<제목>
 Article: <기사 URL>
 HN discussion: <코멘트 URL>
 ```
 AI 채팅에 붙였을 때 두 URL의 역할이 구분되도록 레이블을 붙인다.
-형식은 `shared/copy-format.js` 한 곳에서만 만들고 테스트로 고정한다.
+제목은 넣지 않는다. 붙여넣은 텍스트를 읽는 쪽이 두 페이지를 어차피 가져오므로
+제목은 중복이다.
+형식은 `content-scripts/hn-core.js` 한 곳에서만 만들고 테스트로 고정한다.
 
 ### 클립보드 쓰기
 `navigator.clipboard.writeText` 우선, 실패 시 숨은 textarea + `execCommand('copy')` 폴백.
@@ -126,7 +127,8 @@ text-highlighter 의 스크립트를 파일 목록만 바꿔 재사용한다.
 
 ## 7. 확정된 결정 사항
 
-- 클립보드 형식: 제목, `Article: <url>`, `HN discussion: <url>` 3줄. 텍스트 글은 2줄.
+- 클립보드 형식: `Article: <url>`, `HN discussion: <url>` 2줄. 텍스트 글은 1줄.
+  (제목 포함으로 시작했다가 중복이라 제거했다.)
 - 버튼 모양: 인라인 SVG 복사 아이콘. 복사 후에는 체크 아이콘으로 전환.
 - 다국어: 영어 + 한국어. 단, 클립보드에 들어가는 레이블은 영어로 고정
   (AI 채팅에 붙이는 텍스트이므로 UI 언어와 무관해야 한다).
