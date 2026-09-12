@@ -1,6 +1,6 @@
 {
   "name": "hn-copy-links",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Copy a Hacker News article link and its comment link with one click",
   "type": "module",
   "scripts": {
