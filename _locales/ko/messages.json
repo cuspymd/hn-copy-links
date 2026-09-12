@@ -1,0 +1,26 @@
+{
+  "extensionName": {
+    "message": "HN Copy Links",
+    "description": "Extension name"
+  },
+  "extensionDescription": {
+    "message": "Hacker News 기사 링크와 댓글 링크를 한 번의 클릭으로 복사합니다.",
+    "description": "Extension description"
+  },
+  "copyButtonTitle": {
+    "message": "기사 링크와 댓글 링크 복사",
+    "description": "Tooltip on the copy button"
+  },
+  "copiedButtonTitle": {
+    "message": "이미 복사한 항목 - 다시 복사하려면 클릭",
+    "description": "Tooltip on a button that was used before"
+  },
+  "copiedFeedback": {
+    "message": "복사됨",
+    "description": "Short confirmation shown right after a copy"
+  },
+  "copyFailedFeedback": {
+    "message": "복사 실패",
+    "description": "Short message shown when writing to the clipboard failed"
+  }
+}

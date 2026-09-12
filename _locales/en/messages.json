@@ -1,0 +1,26 @@
+{
+  "extensionName": {
+    "message": "HN Copy Links",
+    "description": "Extension name"
+  },
+  "extensionDescription": {
+    "message": "Copy a Hacker News article link and its discussion link with one click.",
+    "description": "Extension description"
+  },
+  "copyButtonTitle": {
+    "message": "Copy article and discussion links",
+    "description": "Tooltip on the copy button"
+  },
+  "copiedButtonTitle": {
+    "message": "Already copied - click to copy again",
+    "description": "Tooltip on a button that was used before"
+  },
+  "copiedFeedback": {
+    "message": "Copied",
+    "description": "Short confirmation shown right after a copy"
+  },
+  "copyFailedFeedback": {
+    "message": "Copy failed",
+    "description": "Short message shown when writing to the clipboard failed"
+  }
+}

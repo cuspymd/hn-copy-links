@@ -1,0 +1,96 @@
+/* The button lives inside Hacker News' own title line, so it inherits that
+   font and has to stay small enough not to push the domain hint onto a second
+   line. Everything here is namespaced with hncl- to keep clear of the site's
+   very generic class names. */
+
+.hncl-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  width: 20px;
+  height: 20px;
+  margin-left: 5px;
+  padding: 0;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: #9a9a9a;
+  cursor: pointer;
+  /* Buttons do not inherit the page font by default, and the feedback bubble
+     below is rendered by this element. */
+  font: inherit;
+  line-height: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hncl-button svg {
+  width: 13px;
+  height: 13px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hncl-button:hover,
+.hncl-button:focus-visible {
+  color: #ff6600;
+  background: rgba(255, 102, 0, 0.12);
+}
+
+.hncl-button:focus-visible {
+  outline: 1px solid #ff6600;
+  outline-offset: 1px;
+}
+
+/* Already copied: a check instead of the clipboard, and dimmed, so a scanned
+   list separates into "read this one" and "not yet" without reading titles. */
+.hncl-button.hncl-copied {
+  color: #c4c4c4;
+}
+
+.hncl-button.hncl-copied svg {
+  stroke-width: 2;
+}
+
+.hncl-button.hncl-copied:hover,
+.hncl-button.hncl-copied:focus-visible {
+  color: #ff6600;
+}
+
+/* The short confirmation after a click. It is absolutely positioned out of
+   flow so appearing and disappearing never reflows the list. */
+.hncl-button.hncl-feedback::after {
+  content: attr(data-hncl-feedback);
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  transform: translate(-50%, -3px);
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: #333;
+  color: #fff;
+  font-size: 10px;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 2147483647;
+}
+
+/* Hacker News serves a narrower layout to phones, where a 13px glyph is below
+   a comfortable touch target. */
+@media (max-width: 640px) {
+  .hncl-button {
+    width: 30px;
+    height: 30px;
+    margin-left: 6px;
+  }
+
+  .hncl-button svg {
+    width: 17px;
+    height: 17px;
+  }
+}

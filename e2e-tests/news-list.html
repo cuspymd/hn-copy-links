@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!-- A trimmed copy of the Hacker News front page markup: the class names and
+     the row/subtext pairing are what the content script reads, so they are
+     reproduced exactly. Row 3 is a text post, whose title points at the item
+     page itself. -->
+<html lang="en" op="news">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hacker News</title>
+  <style>
+    body { font-family: Verdana, Geneva, sans-serif; font-size: 10pt; background: #f6f6ef; }
+    .titleline a { color: #000; text-decoration: none; }
+    .sitebit, .subtext { color: #828282; font-size: 8pt; }
+    .rank { color: #828282; padding-right: 5px; text-align: right; }
+  </style>
+</head>
+<body>
+<center>
+<table id="hnmain" border="0" cellpadding="0" cellspacing="0" width="85%" bgcolor="#f6f6ef">
+  <tbody>
+    <tr>
+      <td bgcolor="#ff6600">
+        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+          <tbody><tr><td><b class="hnname"><a href="news">Hacker News</a></b></td></tr></tbody>
+        </table>
+      </td>
+    </tr>
+    <tr id="pagespace" title="" style="height:10px"></tr>
+    <tr>
+      <td>
+        <table border="0" cellpadding="0" cellspacing="0" class="itemlist">
+          <tbody>
+            <tr id="41000001" class="athing submission">
+              <td align="right" valign="top" class="title"><span class="rank">1.</span></td>
+              <td valign="top" class="votelinks"><center><a href="vote?id=41000001&amp;how=up"><div class="votearrow" title="upvote"></div></a></center></td>
+              <td class="title"><span class="titleline"><a href="https://example.com/rust-in-the-kernel">Rust in the kernel, two years on</a><span class="sitebit comhead"> (<a href="from?site=example.com"><span class="sitestr">example.com</span></a>)</span></span></td>
+            </tr>
+            <tr>
+              <td colspan="2"></td>
+              <td class="subtext"><span class="subline">
+                <span class="score" id="score_41000001">412 points</span> by <a href="user?id=alice" class="hnuser">alice</a>
+                <span class="age" title="2026-09-13T01:00:00"><a href="item?id=41000001">3 hours ago</a></span>
+                | <a href="hide?id=41000001">hide</a> | <a href="item?id=41000001">188&nbsp;comments</a>
+              </span></td>
+            </tr>
+            <tr class="spacer" style="height:5px"></tr>
+
+            <tr id="41000002" class="athing submission">
+              <td align="right" valign="top" class="title"><span class="rank">2.</span></td>
+              <td valign="top" class="votelinks"><center><a href="vote?id=41000002&amp;how=up"><div class="votearrow" title="upvote"></div></a></center></td>
+              <td class="title"><span class="titleline"><a href="https://blog.example.org/posts/sqlite-indexes">Understanding SQLite indexes</a><span class="sitebit comhead"> (<a href="from?site=blog.example.org"><span class="sitestr">blog.example.org</span></a>)</span></span></td>
+            </tr>
+            <tr>
+              <td colspan="2"></td>
+              <td class="subtext"><span class="subline">
+                <span class="score" id="score_41000002">96 points</span> by <a href="user?id=bob" class="hnuser">bob</a>
+                <span class="age" title="2026-09-13T00:10:00"><a href="item?id=41000002">4 hours ago</a></span>
+                | <a href="hide?id=41000002">hide</a> | <a href="item?id=41000002">discuss</a>
+              </span></td>
+            </tr>
+            <tr class="spacer" style="height:5px"></tr>
+
+            <tr id="41000003" class="athing submission">
+              <td align="right" valign="top" class="title"><span class="rank">3.</span></td>
+              <td valign="top" class="votelinks"><center><a href="vote?id=41000003&amp;how=up"><div class="votearrow" title="upvote"></div></a></center></td>
+              <td class="title"><span class="titleline"><a href="item?id=41000003">Ask HN: How do you keep up with your reading list?</a></span></td>
+            </tr>
+            <tr>
+              <td colspan="2"></td>
+              <td class="subtext"><span class="subline">
+                <span class="score" id="score_41000003">54 points</span> by <a href="user?id=carol" class="hnuser">carol</a>
+                <span class="age" title="2026-09-12T23:30:00"><a href="item?id=41000003">5 hours ago</a></span>
+                | <a href="hide?id=41000003">hide</a> | <a href="item?id=41000003">61&nbsp;comments</a>
+              </span></td>
+            </tr>
+            <tr class="spacer" style="height:5px"></tr>
+
+            <tr class="morespace" style="height:10px"></tr>
+            <tr><td colspan="2"></td><td class="title"><a href="?p=2" class="morelink" rel="next">More</a></td></tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+</center>
+</body>
+</html>
