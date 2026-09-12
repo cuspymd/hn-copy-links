@@ -10,6 +10,9 @@
   <title>Hacker News</title>
   <style>
     body { font-family: Verdana, Geneva, sans-serif; font-size: 10pt; background: #f6f6ef; }
+    /* Hacker News really does clip this cell. Keep it: without the rule, the
+       fixture cannot reproduce anything the clipping breaks. */
+    td.title { overflow: hidden; }
     .titleline a { color: #000; text-decoration: none; }
     .sitebit, .subtext { color: #828282; font-size: 8pt; }
     .rank { color: #828282; padding-right: 5px; text-align: right; }

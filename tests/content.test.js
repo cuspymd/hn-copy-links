@@ -109,15 +109,40 @@ describe('copying', () => {
       await Promise.resolve();
       await Promise.resolve();
 
-      const button = buttons()[0];
-      expect(button.classList.contains('hncl-feedback')).toBe(true);
-      expect(button.dataset.hnclFeedback).toBe('copiedFeedback');
+      const bubble = document.querySelector('.hncl-bubble');
+      expect(bubble.textContent).toBe('copiedFeedback');
+      expect(bubble.classList.contains('hncl-bubble-visible')).toBe(true);
 
       jest.advanceTimersByTime(1500);
-      expect(button.classList.contains('hncl-feedback')).toBe(false);
+      expect(bubble.classList.contains('hncl-bubble-visible')).toBe(false);
     } finally {
       jest.useRealTimers();
     }
+  });
+
+  // Hacker News clips the title cell with `overflow: hidden`, so a bubble drawn
+  // inside the row is invisible on the real site however correct it looks in a
+  // fixture. Hanging it off the body is the only part of that a test can check.
+  test('puts the confirmation on the body, outside the clipped row', async () => {
+    await loadContentScript({ html: listPage(ROWS) });
+
+    buttons()[0].click();
+    await flushPromises();
+
+    const bubble = document.querySelector('.hncl-bubble');
+    expect(bubble.parentElement).toBe(document.body);
+    expect(bubble.closest('tr')).toBeNull();
+  });
+
+  test('reuses one bubble across rows', async () => {
+    await loadContentScript({ html: listPage(ROWS) });
+
+    buttons()[0].click();
+    await flushPromises();
+    buttons()[1].click();
+    await flushPromises();
+
+    expect(document.querySelectorAll('.hncl-bubble')).toHaveLength(1);
   });
 
   test('reports a failed copy and does not mark the row', async () => {
@@ -129,7 +154,7 @@ describe('copying', () => {
     buttons()[0].click();
     await flushPromises();
 
-    expect(buttons()[0].dataset.hnclFeedback).toBe('copyFailedFeedback');
+    expect(document.querySelector('.hncl-bubble').textContent).toBe('copyFailedFeedback');
     expect(buttons()[0].classList.contains('hncl-copied')).toBe(false);
     expect(await chrome.storage.local.get(STORAGE_KEY)).toEqual({});
 

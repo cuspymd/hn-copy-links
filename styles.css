@@ -61,23 +61,28 @@
   color: #ff6600;
 }
 
-/* The short confirmation after a click. It is absolutely positioned out of
-   flow so appearing and disappearing never reflows the list. */
-.hncl-button.hncl-feedback::after {
-  content: attr(data-hncl-feedback);
-  position: absolute;
-  left: 50%;
-  bottom: 100%;
-  transform: translate(-50%, -3px);
+/* The short confirmation after a click. It lives on the body and is placed
+   from the button's rectangle, because Hacker News clips the title cell -
+   see the comment in content.js. Fixed positioning also keeps it out of the
+   page's flow, so it never reflows the list. */
+.hncl-bubble {
+  position: fixed;
+  transform: translate(-50%, -125%);
   padding: 2px 6px;
   border-radius: 3px;
   background: #333;
   color: #fff;
-  font-size: 10px;
-  line-height: 1.4;
+  font: 10px/1.4 Verdana, Geneva, sans-serif;
   white-space: nowrap;
   pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
   z-index: 2147483647;
+}
+
+.hncl-bubble.hncl-bubble-visible {
+  opacity: 1;
+  visibility: visible;
 }
 
 /* Hacker News serves a narrower layout to phones, where a 13px glyph is below

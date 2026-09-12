@@ -1,0 +1,67 @@
+=== NAME ===
+HN Copy Links
+
+=== SUMMARY (AMO, max 250 characters) ===
+One click on a Hacker News headline copies both the article link and the link to its Hacker News discussion, ready to paste into an AI chat. Copied stories stay marked, so you can still tell at a glance what you have already read.
+
+=== SHORT DESCRIPTION (Chrome Web Store, max 132 characters) ===
+Copy a Hacker News article link and its discussion link in one click, and keep track of the stories you already copied.
+
+=== DESCRIPTION ===
+Reading Hacker News through an AI chat usually means two trips: paste the
+article link, then go back and find the comment page so the summary covers what
+Hacker News made of it. Asking the assistant to find the discussion itself
+rarely lands on the right page.
+
+HN Copy Links puts a small copy button next to every headline. One click writes
+both links to your clipboard:
+
+Article: https://example.com/rust-in-the-kernel
+HN discussion: https://news.ycombinator.com/item?id=41000001
+
+Paste that into any assistant and it has everything it needs. An Ask HN or
+Show HN post has no separate article, so it copies as a single line.
+
+WHAT YOU ALREADY READ
+
+Copying instead of clicking means the headline never turns purple, so the
+button takes that job over: once used, it turns into a dimmed check mark. A
+long list still separates into what you have looked at and what you have not.
+
+That record is kept on your own device, in the browser's extension storage. It
+is never uploaded and never shared between your devices. Entries older than
+180 days are dropped.
+
+WHERE IT WORKS
+
+Every Hacker News list: the front page, new, best, ask, show, past, a user's
+submissions and the per-site pages. The button lands wherever a headline does.
+
+PRIVACY AND PERMISSIONS
+
+The extension asks for two things: storage, for the list of stories you copied,
+and access to news.ycombinator.com, which is the only site it touches. There is
+no background process, no analytics and no network request of its own. Nothing
+you do leaves your browser.
+
+The source is open and the whole extension is a few hundred lines:
+https://github.com/cuspymd/hn-copy-links
+
+=== SCREENSHOT CAPTIONS ===
+1. A copy button on every headline. Stories you have copied keep a check mark.
+2. One click copies the article link and the discussion link, and confirms it.
+3. The same on Firefox for Android, with larger buttons for touch.
+
+=== AMO CATEGORY ===
+Feeds, News & Blogging (firefox and android)
+
+=== CHROME WEB STORE CATEGORY ===
+Productivity / News & Weather
+
+=== TAGS ===
+AMO tags come from a fixed vocabulary (/api/v5/addons/tags/) and none of them
+fit this extension, so the AMO listing carries no tags. The Chrome Web Store
+has no tag field.
+
+=== LICENSE ===
+MIT

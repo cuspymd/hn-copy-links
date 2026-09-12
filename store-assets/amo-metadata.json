@@ -1,0 +1,32 @@
+{
+  "categories": {
+    "firefox": [
+      "feeds-news-blogging"
+    ],
+    "android": [
+      "feeds-news-blogging"
+    ]
+  },
+  "default_locale": "en-US",
+  "name": {
+    "en-US": "HN Copy Links"
+  },
+  "summary": {
+    "en-US": "One click on a Hacker News headline copies both the article link and the link to its Hacker News discussion, ready to paste into an AI chat. Copied stories stay marked, so you can still tell at a glance what you have already read.",
+    "ko": "Hacker News 제목 옆의 버튼을 한 번 누르면 기사 링크와 그 기사의 Hacker News 댓글 링크가 함께 복사됩니다. AI 채팅에 그대로 붙여 넣으면 됩니다. 복사한 글에는 표시가 남아서 이미 본 글을 한눈에 구분할 수 있습니다."
+  },
+  "description": {
+    "en-US": "Reading Hacker News through an AI chat usually means two trips: paste the\narticle link, then go back and find the comment page so the summary covers what\nHacker News made of it. Asking the assistant to find the discussion itself\nrarely lands on the right page.\n\nHN Copy Links puts a small copy button next to every headline. One click writes\nboth links to your clipboard:\n\nArticle: https://example.com/rust-in-the-kernel\nHN discussion: https://news.ycombinator.com/item?id=41000001\n\nPaste that into any assistant and it has everything it needs. An Ask HN or\nShow HN post has no separate article, so it copies as a single line.\n\nWHAT YOU ALREADY READ\n\nCopying instead of clicking means the headline never turns purple, so the\nbutton takes that job over: once used, it turns into a dimmed check mark. A\nlong list still separates into what you have looked at and what you have not.\n\nThat record is kept on your own device, in the browser's extension storage. It\nis never uploaded and never shared between your devices. Entries older than\n180 days are dropped.\n\nWHERE IT WORKS\n\nEvery Hacker News list: the front page, new, best, ask, show, past, a user's\nsubmissions and the per-site pages. The button lands wherever a headline does.\n\nPRIVACY AND PERMISSIONS\n\nThe extension asks for two things: storage, for the list of stories you copied,\nand access to news.ycombinator.com, which is the only site it touches. There is\nno background process, no analytics and no network request of its own. Nothing\nyou do leaves your browser.\n\nThe source is open and the whole extension is a few hundred lines:\nhttps://github.com/cuspymd/hn-copy-links",
+    "ko": "Hacker News 기사를 AI 채팅으로 읽으려면 보통 두 번 움직여야 합니다. 기사 링크를\n붙여 넣고, 다시 돌아가 댓글 페이지를 찾아 함께 넣어야 Hacker News의 반응까지\n요약됩니다. 댓글 페이지를 직접 찾아 달라고 해도 엉뚱한 페이지를 가져오는 일이\n많습니다.\n\nHN Copy Links는 모든 제목 옆에 작은 복사 버튼을 놓습니다. 한 번 누르면 두 링크가\n클립보드에 들어갑니다.\n\nArticle: https://example.com/rust-in-the-kernel\nHN discussion: https://news.ycombinator.com/item?id=41000001\n\n이것만 붙여 넣으면 필요한 것이 다 들어 있습니다. Ask HN이나 Show HN 처럼 별도\n기사가 없는 글은 한 줄만 복사됩니다.\n\n이미 본 글 구분\n\n링크를 클릭하지 않고 복사만 하면 제목 색이 바뀌지 않습니다. 그래서 버튼이 그\n역할을 대신합니다. 한 번 누른 버튼은 흐린 체크 표시로 바뀌므로, 긴 목록에서도\n본 글과 안 본 글이 구분됩니다.\n\n이 기록은 브라우저의 확장 저장소에 기기별로 남습니다. 어디에도 올라가지 않고\n기기 사이에 공유되지도 않습니다. 180일이 지난 항목은 지워집니다.\n\n동작하는 곳\n\nHacker News의 모든 목록에서 동작합니다. 첫 화면, new, best, ask, show, past,\n사용자 제출 목록, 사이트별 목록까지 제목이 있는 곳이면 버튼이 붙습니다.\n\n개인정보와 권한\n\n필요한 권한은 두 가지입니다. 복사한 글 목록을 저장하기 위한 storage,\n그리고 유일하게 접근하는 사이트인 news.ycombinator.com 입니다. 백그라운드\n프로세스도, 분석 도구도, 자체 네트워크 요청도 없습니다. 사용 내역이 브라우저를\n떠나지 않습니다.\n\n소스는 공개되어 있고 전체가 수백 줄입니다.\nhttps://github.com/cuspymd/hn-copy-links"
+  },
+  "homepage": {
+    "en-US": "https://github.com/cuspymd/hn-copy-links"
+  },
+  "support_url": {
+    "en-US": "https://github.com/cuspymd/hn-copy-links/issues"
+  },
+  "license": "MIT",
+  "is_experimental": false,
+  "requires_payment": false,
+  "tags": []
+}

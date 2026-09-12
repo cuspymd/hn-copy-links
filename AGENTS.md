@@ -16,6 +16,8 @@ Chrome, Firefox and Firefox for Android.
 - `npm run deploy` - Build `dist/` (Chrome) and `dist-firefox/` (Firefox)
 - `npm run version-deploy -- <version> chrome|firefox` - Release build and zip into `outputs/`
 - `npm run run:firefox-android` - Build and push to a USB-attached phone; see README
+- `npm run store-assets` - Rebuild the store screenshots and AMO metadata
+- `npm run submit:firefox` - Upload to AMO; needs `WEB_EXT_API_KEY` / `WEB_EXT_API_SECRET`
 - `npm run link-skills` - Link `.claude/skills` to `.agents/skills`; once per clone
 
 Load `dist/` unpacked via `chrome://extensions`, or `dist-firefox/manifest.json`
@@ -52,6 +54,11 @@ as a temporary add-on via `about:debugging`.
   where English reads best whatever the UI language is.
 - **A failed copy must not mark the row.** Marking a row whose text never
   reached the clipboard makes the user skip an article they never read.
+- **Hacker News clips the title cell** with `overflow: hidden`, so anything
+  drawn inside a row disappears the moment it reaches above the line. The
+  confirmation bubble therefore hangs off the body and is placed from the
+  button's rectangle. The E2E fixture carries that rule so it cannot hide the
+  next bug of this kind.
 - **Both clipboard paths need a user gesture.** `shared/clipboard.js` falls back
   from `navigator.clipboard.writeText` to a hidden textarea for Firefox for
   Android. Do not move a copy onto a timer or a message handler.

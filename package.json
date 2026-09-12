@@ -11,7 +11,9 @@
     "deploy:firefox": "node ./scripts/deploy.cjs firefox",
     "version-deploy": "node ./scripts/version-deploy.cjs",
     "link-skills": "node ./scripts/link-skills.cjs",
-    "run:firefox-android": "npm run deploy:firefox && web-ext run --target=firefox-android --source-dir=dist-firefox"
+    "run:firefox-android": "npm run deploy:firefox && web-ext run --target=firefox-android --source-dir=dist-firefox",
+    "store-assets": "npm run deploy:chrome && node scripts/make-screenshots.mjs && node scripts/make-amo-metadata.cjs",
+    "submit:firefox": "npm run deploy:firefox && web-ext sign --channel listed --source-dir dist-firefox --artifacts-dir outputs --amo-metadata store-assets/amo-metadata.json"
   },
   "author": "",
   "license": "MIT",

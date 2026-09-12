@@ -75,9 +75,19 @@ test('keeps the mark in a new tab on the same profile', async ({ context, hnPage
 
 test('shows a short confirmation after a copy', async ({ hnPage }) => {
   const button = hnPage.locator(BUTTON).first();
+  const bubble = hnPage.locator('.hncl-bubble');
+
   await button.click();
 
-  await expect(button).toHaveClass(/hncl-feedback/);
-  await expect(button).toHaveAttribute('data-hncl-feedback', 'Copied');
-  await expect(button).not.toHaveClass(/hncl-feedback/, { timeout: 4000 });
+  await expect(bubble).toHaveText('Copied');
+  await expect(bubble).toBeVisible();
+
+  // Hacker News clips the title cell, so the bubble has to sit above the row
+  // and outside it. Both halves of that are checked here.
+  const bubbleBox = await bubble.boundingBox();
+  const buttonBox = await button.boundingBox();
+  expect(bubbleBox.y + bubbleBox.height).toBeLessThanOrEqual(buttonBox.y + 1);
+  expect(await bubble.evaluate((el) => el.parentElement === document.body)).toBe(true);
+
+  await expect(bubble).toBeHidden({ timeout: 4000 });
 });

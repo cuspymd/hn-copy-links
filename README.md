@@ -72,6 +72,28 @@ npm run test:e2e         # Playwright, against a saved copy of the HN markup
 
 `AGENTS.md` has the details worth knowing before changing anything.
 
+## Store listing
+
+The listing text lives in `arch-docs/etc/store-descriptions-en.txt` and
+`-ko.txt`. This rebuilds the screenshots and the AMO metadata from it:
+
+```bash
+npm run store-assets
+```
+
+Screenshots land in `store-assets/` at 1280x800, captured from the live Hacker
+News list, so look at them before using them. Submitting to Firefox Add-ons
+needs [an AMO API credential](https://addons.mozilla.org/developers/addon/api/key/)
+in the environment:
+
+```bash
+WEB_EXT_API_KEY=user:... WEB_EXT_API_SECRET=... npm run submit:firefox
+```
+
+That uploads the build and creates the listing with the generated metadata.
+Screenshots still have to be attached by hand on AMO, which has no API for
+them.
+
 ## License
 
 MIT

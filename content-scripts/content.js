@@ -8,7 +8,8 @@
 
   const BUTTON_CLASS = 'hncl-button';
   const COPIED_CLASS = 'hncl-copied';
-  const FEEDBACK_CLASS = 'hncl-feedback';
+  const BUBBLE_CLASS = 'hncl-bubble';
+  const VISIBLE_CLASS = 'hncl-bubble-visible';
   const FEEDBACK_MS = 1500;
 
   // Two glyphs rather than two states of one: the copied mark has to be
@@ -55,14 +56,28 @@
     button.setAttribute('aria-label', button.title);
   }
 
+  // The confirmation hangs off the body, not off the button, and is positioned
+  // from the button's own rectangle. Hacker News puts `overflow: hidden` on the
+  // title cell, so anything drawn inside the row is clipped away the moment it
+  // reaches above the line - which is where a bubble has to go.
+  let bubble = null;
+  let bubbleTimer = null;
+
   function showFeedback(button, text) {
-    button.dataset.hnclFeedback = text;
-    button.classList.add(FEEDBACK_CLASS);
-    clearTimeout(button.hnclFeedbackTimer);
-    button.hnclFeedbackTimer = setTimeout(() => {
-      button.classList.remove(FEEDBACK_CLASS);
-      delete button.dataset.hnclFeedback;
-    }, FEEDBACK_MS);
+    if (!bubble) {
+      bubble = document.createElement('div');
+      bubble.className = BUBBLE_CLASS;
+      document.body.appendChild(bubble);
+    }
+
+    const rect = button.getBoundingClientRect();
+    bubble.textContent = text;
+    bubble.style.left = `${rect.left + rect.width / 2}px`;
+    bubble.style.top = `${rect.top}px`;
+    bubble.classList.add(VISIBLE_CLASS);
+
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(() => bubble.classList.remove(VISIBLE_CLASS), FEEDBACK_MS);
   }
 
   async function handleClick(event, button, item) {
@@ -141,6 +156,9 @@
     dispose() {
       observer?.disconnect();
       observer = null;
+      clearTimeout(bubbleTimer);
+      bubble?.remove();
+      bubble = null;
     },
   };
 
