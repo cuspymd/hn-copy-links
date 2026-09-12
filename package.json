@@ -10,7 +10,8 @@
     "deploy:chrome": "node ./scripts/deploy.cjs",
     "deploy:firefox": "node ./scripts/deploy.cjs firefox",
     "version-deploy": "node ./scripts/version-deploy.cjs",
-    "link-skills": "node ./scripts/link-skills.cjs"
+    "link-skills": "node ./scripts/link-skills.cjs",
+    "run:firefox-android": "npm run deploy:firefox && web-ext run --target=firefox-android --source-dir=dist-firefox"
   },
   "author": "",
   "license": "MIT",
@@ -19,7 +20,8 @@
     "archiver": "^7.0.1",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.7.0",
-    "playwright": "^1.52.0"
+    "playwright": "^1.52.0",
+    "web-ext": "^10.6.0"
   },
   "jest": {
     "testEnvironment": "jsdom",

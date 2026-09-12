@@ -33,6 +33,30 @@ npm run deploy
 - Chrome: `chrome://extensions` -> Developer mode -> Load unpacked -> `dist/`
 - Firefox: `about:debugging` -> This Firefox -> Load Temporary Add-on -> `dist-firefox/manifest.json`
 
+### Firefox for Android
+
+Install Firefox Nightly on the phone, turn on **Settings -> Advanced -> Remote
+debugging via USB**, and connect it over USB with developer mode enabled. Then,
+with the [Android platform tools](https://developer.android.com/tools/releases/platform-tools)
+on your `PATH`:
+
+```bash
+adb devices
+```
+
+That should list the phone as `device`. If it says `unauthorized`, accept the
+debugging prompt on the phone. Then:
+
+```bash
+npm run run:firefox-android
+```
+
+The extension is built and pushed to Firefox Nightly, which restarts with it
+installed. Add `-- --adb-device <id>` if more than one device is attached, and
+`-- --firefox-apk org.mozilla.firefox` to use release Firefox instead of
+Nightly. Leave the command running: it reinstalls the extension whenever
+`dist-firefox/` changes, so a rebuild is all a change needs.
+
 ## Permissions
 
 `storage`, and access to `news.ycombinator.com`. Nothing else. The extension
