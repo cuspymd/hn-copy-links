@@ -56,7 +56,7 @@ https://github.com/cuspymd/hn-copy-links
 Feeds, News & Blogging (firefox and android)
 
 === CHROME WEB STORE CATEGORY ===
-Productivity / News & Weather
+News & Weather (second choice: Tools). See chrome-web-store-submission.md.
 
 === TAGS ===
 AMO tags come from a fixed vocabulary (/api/v5/addons/tags/) and none of them
