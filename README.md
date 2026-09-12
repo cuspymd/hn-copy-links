@@ -60,7 +60,8 @@ Nightly. Leave the command running: it reinstalls the extension whenever
 ## Permissions
 
 `storage`, and access to `news.ycombinator.com`. Nothing else. The extension
-has no background process and sends no data anywhere.
+has no background process and sends no data anywhere. [PRIVACY.md](PRIVACY.md)
+spells that out.
 
 ## Development
 

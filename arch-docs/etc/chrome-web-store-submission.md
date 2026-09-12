@@ -66,8 +66,17 @@ The content script reads submission rows on Hacker News to build the two links a
 **Data usage certification**
 
 Certify that no user data is collected. Nothing is transmitted anywhere, there
-is no analytics and no remote code. A privacy policy URL is therefore not
-required; the repository README covers what is stored locally.
+is no analytics and no remote code.
+
+**Privacy policy URL**
+
+```
+https://github.com/cuspymd/hn-copy-links/blob/main/PRIVACY.md
+```
+
+The console asks for one whenever an extension requests permissions, so
+`PRIVACY.md` is kept in the repository for it. Update that file before
+publishing any version that changes what is stored or sent.
 
 ## After submitting
 
