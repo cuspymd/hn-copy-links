@@ -1,12 +1,17 @@
-// Puts a copy button on every Hacker News submission row and keeps the
-// "already copied" marks in sync with extension local storage.
+// Puts a copy button - and, on Android, a share button - on every Hacker News
+// submission row, and keeps the "already copied" marks in sync with extension
+// local storage.
 (function () {
   const { parseRow, buildCopyText } = window.HnCore;
   const { markCopied, isCopied } = window.CopiedStoreCore;
+  const { normalizeSettings } = window.SettingsCore;
+  const { isShareSheetAvailable, shareText } = window.ShareCore;
   const browserAPI = window.browserAPI;
   const COPIED_ITEMS_KEY = window.STORAGE_KEYS.COPIED_ITEMS;
+  const SETTINGS_KEY = window.STORAGE_KEYS.SETTINGS;
 
   const BUTTON_CLASS = 'hncl-button';
+  const SHARE_CLASS = 'hncl-share';
   const COPIED_CLASS = 'hncl-copied';
   const BUBBLE_CLASS = 'hncl-bubble';
   const VISIBLE_CLASS = 'hncl-bubble-visible';
@@ -22,12 +27,23 @@
   const COPIED_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">'
     + '<path d="M2.5 8.5l4 4 7-8" />'
     + '</svg>';
+  // The share glyph Android itself uses, so a phone reader knows what it opens.
+  const SHARE_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">'
+    + '<circle cx="12" cy="3.5" r="1.75" />'
+    + '<circle cx="4" cy="8" r="1.75" />'
+    + '<circle cx="12" cy="12.5" r="1.75" />'
+    + '<path d="M5.5 7.15l5-2.8M5.5 8.85l5 2.8" />'
+    + '</svg>';
+
+  // Decided once: neither the browser nor the platform changes under a page.
+  const shareAvailable = isShareSheetAvailable(navigator);
 
   function message(name) {
     return browserAPI.i18n?.getMessage(name) || name;
   }
 
   let copiedItems = {};
+  let settings = normalizeSettings(null);
 
   async function loadCopiedItems() {
     try {
@@ -38,6 +54,18 @@
       // rather than leaving the page without buttons.
       window.errorLog('Failed to read copied items', error);
       copiedItems = {};
+    }
+  }
+
+  async function loadSettings() {
+    try {
+      const stored = await browserAPI.storage.local.get(SETTINGS_KEY);
+      settings = normalizeSettings(stored?.[SETTINGS_KEY]);
+    } catch (error) {
+      // Same call as above: the defaults are a usable answer, and the page is
+      // worth more with the buttons than without them.
+      window.errorLog('Failed to read settings', error);
+      settings = normalizeSettings(null);
     }
   }
 
@@ -97,6 +125,65 @@
     await persistCopiedItems();
   }
 
+  // Hands the same text a copy would write to the share sheet, so a chat app
+  // picked from it gets exactly what a paste would have given it.
+  async function handleShareClick(event, shareButton, copyButton, item) {
+    // Inside the title link, like the copy button.
+    event.preventDefault();
+    event.stopPropagation();
+
+    // No await before this call - see shareText.
+    const result = await shareText(navigator, buildCopyText(item));
+    if (result === 'failed') {
+      showFeedback(shareButton, message('shareFailedFeedback'));
+      return;
+    }
+    // A sheet closed without a choice took nothing anywhere, so it must not
+    // mark the row, for the same reason a failed copy must not.
+    if (result !== 'shared') return;
+
+    applyCopiedState(copyButton, true);
+    copiedItems = markCopied(copiedItems, item.itemId);
+    await persistCopiedItems();
+  }
+
+  function createShareButton(item, copyButton) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = SHARE_CLASS;
+    button.innerHTML = SHARE_ICON;
+    button.title = message('shareButtonTitle');
+    button.setAttribute('aria-label', button.title);
+    button.addEventListener('click', (event) => handleShareClick(event, button, copyButton, item));
+    return button;
+  }
+
+  function wantsShareButton() {
+    return shareAvailable && settings.shareButton === true;
+  }
+
+  // Called when the settings change, so it has to be safe over rows that
+  // already carry a share button and rows that do not.
+  function applyShareSetting(root = document) {
+    const wanted = wantsShareButton();
+
+    root.querySelectorAll('tr.athing').forEach((row) => {
+      const titleline = row.querySelector('.titleline');
+      const copyButton = titleline?.querySelector(`.${BUTTON_CLASS}`);
+      if (!copyButton) return;
+
+      const existing = titleline.querySelector(`.${SHARE_CLASS}`);
+      if (!wanted) {
+        existing?.remove();
+        return;
+      }
+      if (existing) return;
+
+      const item = parseRow(row, document.baseURI);
+      if (item) titleline.appendChild(createShareButton(item, copyButton));
+    });
+  }
+
   function addButton(row) {
     if (row.dataset.hnclDecorated) return;
 
@@ -117,6 +204,10 @@
     button.addEventListener('click', (event) => handleClick(event, button, item));
 
     titleline.appendChild(button);
+
+    if (wantsShareButton()) {
+      titleline.appendChild(createShareButton(item, button));
+    }
   }
 
   function decorateAll(root = document) {
@@ -146,16 +237,32 @@
   // would keep running and decorate rows from its own stale map. Stand it down.
   window.hnCopyLinks?.dispose();
 
+  // The settings are changed on the options page, which is a different
+  // document. Without this the reader would have to reload Hacker News to see
+  // a button appear - and on a phone that means losing their place in the list.
+  function handleSettingsChange(changes, area) {
+    if (area !== 'local' || !changes?.[SETTINGS_KEY]) return;
+
+    settings = normalizeSettings(changes[SETTINGS_KEY].newValue);
+    applyShareSetting();
+  }
+
+  function watchForSettingsChanges() {
+    browserAPI.storage.onChanged.addListener(handleSettingsChange);
+  }
+
   async function init() {
-    await loadCopiedItems();
+    await Promise.all([loadCopiedItems(), loadSettings()]);
     decorateAll();
     watchForNewRows();
+    watchForSettingsChanges();
   }
 
   window.hnCopyLinks = {
     dispose() {
       observer?.disconnect();
       observer = null;
+      browserAPI.storage.onChanged.removeListener(handleSettingsChange);
       clearTimeout(bubbleTimer);
       bubble?.remove();
       bubble = null;

@@ -5,7 +5,10 @@ traps, the reasons, the commands. For structure, read the tree.
 
 "HN Copy Links" puts a copy button next to every Hacker News submission title.
 One click writes the article link and the discussion link to the clipboard, for
-pasting into an AI chat. Copied rows stay marked, so the list still separates
+pasting into an AI chat. On Android a share button beside it skips the pasting:
+it opens the system share sheet with the same text, and the reader picks the
+chat app there. It is on by default and switchable on the settings page. Copied
+rows stay marked, so the list still separates
 into read and unread even though the titles were never clicked.
 Chrome, Firefox and Firefox for Android.
 
@@ -23,16 +26,35 @@ Chrome, Firefox and Firefox for Android.
 Load `dist/` unpacked via `chrome://extensions`, or `dist-firefox/manifest.json`
 as a temporary add-on via `about:debugging`.
 
-## Design constraints
+## Design decisions
 
-- **No background script, no popup, no options page.** The extension asks for
-  `storage` and `news.ycombinator.com` and nothing else. Keep it that way: both
-  stores review the permission list, and this one needs no explaining.
+- **Keep the permission list at `storage` and `news.ycombinator.com`.** Both
+  stores review it, and this one needs no explaining. That is the rule. There
+  is no background script only because nothing has needed one - the settings
+  page reads and writes storage directly, and the content script hears the
+  write through `storage.onChanged`. If something ever does need a background
+  script, add one; it costs no permission.
 - **Pure logic goes in a core file**, not in `content.js`: `hn-core.js` (reading
-  a row, building URLs and the copied text) and `copied-store-core.js` (the
-  copied-items map). Each is an IIFE publishing one `window` namespace. Core
+  a row, building URLs and the copied text), `copied-store-core.js` (the
+  copied-items map) and `share-core.js` (whether to offer a share sheet, and
+  calling it). Each is an IIFE publishing one `window` namespace. Core
   files are importable, so tests reach them and coverage counts them;
   `content.js` has to be evaluated and reports 0% either way.
+- **One share button, not a button per chat service.** Links such as
+  `chatgpt.com/?q=` would each need a service's URL format and a list to keep;
+  the share sheet reaches every app the reader has installed, with neither.
+- **The share button is shown on Android only** (`isShareSheetAvailable`).
+  Firefox on the desktop has no `navigator.share`; Chrome on the desktop has
+  one, but its sheet lists OS targets rather than chat apps. The check is the
+  API plus `Android` in the user agent, made once when the script loads.
+- **Settings controls are markup.** Each checkbox on the options page carries
+  its key in `data-setting`, and `options.js` binds every one it finds, so a
+  new setting is a key in `DEFAULT_SETTINGS`, a checkbox and its messages.
+- **The settings page is a second surface that loads the same files.**
+  `options/options.html` pulls `shared/` and `constants/` in by relative path,
+  in the manifest's order, because those files find each other through
+  `window`. Logic shared by both surfaces belongs in `shared/`, which is why
+  `settings-core.js` lives there rather than beside the other cores.
 - A new script must be added to `content_scripts[0].js` in **both** manifests,
   before whatever reads it. `tests/packaging.test.js` fails if the manifests
   drift apart or a listed file is missing.
@@ -52,8 +74,16 @@ as a temporary add-on via `about:debugging`.
 - **The copied text is not localized.** The `Article:` and `HN discussion:`
   labels are constants in `hn-core.js`: that text is pasted into an AI chat,
   where English reads best whatever the UI language is.
-- **A failed copy must not mark the row.** Marking a row whose text never
-  reached the clipboard makes the user skip an article they never read.
+- **`navigator.share` is called before anything is awaited.** It needs the
+  click's user activation, and an `await` in front of it spends that and the
+  call is refused. `shareText` makes it the first thing it does; keep it so.
+- **Everything goes in `text`, never `url`.** The share carries what
+  `buildCopyText` builds, two lines for two links, and a receiving app may keep
+  only one of `text` and `url`.
+- **A failed copy must not mark the row, and nor must a share that did not
+  happen.** Marking a row whose text never left makes the user skip an article
+  they never read. A share marks the row only once it resolves; a sheet closed
+  without a choice (`AbortError`) marks nothing and says nothing.
 - **Hacker News clips the title cell** with `overflow: hidden`, so anything
   drawn inside a row disappears the moment it reaches above the line. The
   confirmation bubble therefore hangs off the body and is placed from the
@@ -77,6 +107,13 @@ as a temporary add-on via `about:debugging`.
 way the manifest does and waits for its init; `submissionRow()` there builds a
 row in the shape Hacker News serves, subtext and spacer rows included.
 
+The E2E suite cannot reach the settings page: with no background service worker
+there is nothing to read the extension id from, so there is no
+`chrome-extension://` URL to open. The toggle is covered by the unit suite, and
+E2E only sees the default. It runs desktop Chromium, so it can only check that
+the share button stays away; the share itself is covered by the unit suite,
+which stands in `navigator.share` and an Android user agent.
+
 The content script only matches `news.ycombinator.com`, so E2E routes that
 origin on the browser context and fulfils it from `e2e-tests/news-list.html`, a
 trimmed copy of the front page. No network, and a redesign breaks the tests when
@@ -87,8 +124,11 @@ no sense is usually a stale `dist/`.
 
 ## Storage and debug
 
-One key, `copiedItems`: item id to the epoch ms of the last copy, in extension
-local storage. `constants/storage-keys.js` owns the name. Local rather than
+Two keys, both in extension local storage, and `constants/storage-keys.js` owns
+both names. `copiedItems`: item id to the epoch ms of the last copy.
+`settings`: the map in `shared/settings-core.js`, today just `shareButton`.
+Read it through `normalizeSettings`, never straight off storage - an older
+version may know fewer keys, and a half-filled map must not reach a caller. Local rather than
 `storage.sync` on purpose - "have I read this" is per-device and syncing it
 would need a conflict story for no gain. Writes drop entries past 180 days and
 cap the map at 5000, newest first.
@@ -102,7 +142,9 @@ by a plain string replace.
 
 No automated test covers it. Check a release by hand on a device: the buttons
 appear at the phone layout's larger touch size, a copy reaches the clipboard,
-and the marks survive a restart.
+and the marks survive a restart. The share button needs the phone too: that
+the sheet opens from a content script, that the chat apps are in it, and that
+the chosen app gets both links. Nothing on a desktop tells you whether it does.
 
 ## Skills
 

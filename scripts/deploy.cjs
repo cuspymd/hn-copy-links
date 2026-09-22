@@ -15,6 +15,7 @@ const filesToCopy = [
 
 const directoriesToCopy = [
   'content-scripts',
+  'options',
   'shared',
   'constants',
   '_locales',

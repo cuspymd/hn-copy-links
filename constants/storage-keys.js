@@ -3,5 +3,7 @@
   window.STORAGE_KEYS = {
     // Map of Hacker News item id -> epoch ms of the last copy.
     COPIED_ITEMS: 'copiedItems',
+    // The settings map owned by `settings-core.js`.
+    SETTINGS: 'settings',
   };
 })();

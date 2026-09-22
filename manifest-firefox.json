@@ -20,8 +20,10 @@
         "constants/storage-keys.js",
         "shared/browser-api.js",
         "shared/clipboard.js",
+        "shared/settings-core.js",
         "content-scripts/hn-core.js",
         "content-scripts/copied-store-core.js",
+        "content-scripts/share-core.js",
         "content-scripts/content.js"
       ],
       "css": [
@@ -30,6 +32,10 @@
       "run_at": "document_end"
     }
   ],
+  "options_ui": {
+    "page": "options/options.html",
+    "open_in_tab": false
+  },
   "icons": {
     "16": "images/icon16.png",
     "48": "images/icon48.png",

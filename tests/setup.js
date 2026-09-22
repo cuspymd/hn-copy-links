@@ -6,4 +6,5 @@ global.chrome = chrome;
 
 beforeEach(() => {
   chrome.storage.local.__reset();
+  chrome.storage.onChanged.__reset();
 });

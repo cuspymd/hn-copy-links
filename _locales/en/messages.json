@@ -22,5 +22,33 @@
   "copyFailedFeedback": {
     "message": "Copy failed",
     "description": "Short message shown when writing to the clipboard failed"
+  },
+  "optionsTitle": {
+    "message": "HN Copy Links settings",
+    "description": "Heading and title of the settings page"
+  },
+  "settingsSavedStatus": {
+    "message": "Saved",
+    "description": "Shown after a setting is written"
+  },
+  "settingsSaveFailedStatus": {
+    "message": "Could not save",
+    "description": "Shown when writing a setting failed"
+  },
+  "shareButtonSettingLabel": {
+    "message": "Share button",
+    "description": "Label of the share button setting"
+  },
+  "shareButtonSettingHint": {
+    "message": "Adds a button to every submission that opens Android’s share menu with both links, so you can send them straight to a chat app. It appears only on Android; elsewhere there is no share menu with those apps in it.",
+    "description": "Explanation under the share button setting"
+  },
+  "shareButtonTitle": {
+    "message": "Share article and discussion links",
+    "description": "Tooltip on the share button"
+  },
+  "shareFailedFeedback": {
+    "message": "Share failed",
+    "description": "Short message shown when the share menu could not be opened"
   }
 }
