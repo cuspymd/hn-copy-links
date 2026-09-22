@@ -5,8 +5,10 @@ import fs from 'fs';
 // reason that logic lives outside the content script.
 import '../../content-scripts/hn-core.js';
 import '../../content-scripts/copied-store-core.js';
+import '../../content-scripts/share-core.js';
 import '../../shared/logger.js';
 import '../../shared/clipboard.js';
+import '../../shared/settings-core.js';
 import '../../constants/storage-keys.js';
 
 /**

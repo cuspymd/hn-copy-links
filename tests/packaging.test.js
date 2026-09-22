@@ -71,9 +71,11 @@ describe('manifests', () => {
       'shared/logger.js',
       'shared/browser-api.js',
       'shared/clipboard.js',
+      'shared/settings-core.js',
       'constants/storage-keys.js',
       'content-scripts/hn-core.js',
       'content-scripts/copied-store-core.js',
+      'content-scripts/share-core.js',
     ]) {
       expect(js.indexOf(dependency)).toBeGreaterThanOrEqual(0);
       expect(js.indexOf(dependency)).toBeLessThan(js.indexOf(last));
@@ -84,6 +86,22 @@ describe('manifests', () => {
     expect(chromeManifest.permissions).toEqual(['storage']);
     expect(chromeManifest.host_permissions).toEqual(['https://news.ycombinator.com/*']);
     expect(chromeManifest.content_scripts[0].matches).toEqual(['https://news.ycombinator.com/*']);
+  });
+
+  // The settings page is a second surface that has to survive a build: it
+  // loads its neighbours by relative path, so a file left out of the copy
+  // breaks it and nothing else.
+  test('the options page and everything it loads exist', () => {
+    const [chromeOptions, firefoxOptions] = [chromeManifest, firefoxManifest].map((m) => m.options_ui);
+    expect(chromeOptions).toEqual(firefoxOptions);
+    expect(chromeOptions.page).toBe('options/options.html');
+
+    const html = fs.readFileSync(path.join(root, chromeOptions.page), 'utf8');
+    const referenced = [...html.matchAll(/(?:src|href)="([^"]+)"/g)].map((match) => match[1]);
+    expect(referenced.length).toBeGreaterThan(0);
+    for (const reference of referenced) {
+      expect(fs.existsSync(path.resolve(path.dirname(path.join(root, chromeOptions.page)), reference))).toBe(true);
+    }
   });
 
   test('every declared icon exists', () => {

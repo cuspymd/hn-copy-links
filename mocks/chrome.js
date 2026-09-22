@@ -12,6 +12,11 @@ function guardNoCallback(api, args) {
 }
 
 const store = new Map();
+const changeListeners = new Set();
+
+function notify(changes) {
+  for (const listener of changeListeners) listener(changes, 'local');
+}
 
 const chrome = {
   storage: {
@@ -30,9 +35,12 @@ const chrome = {
       },
       async set(items, ...rest) {
         guardNoCallback('storage.local.set', rest);
+        const changes = {};
         for (const [name, value] of Object.entries(items)) {
+          changes[name] = { oldValue: store.get(name), newValue: value };
           store.set(name, value);
         }
+        notify(changes);
       },
       async clear(...rest) {
         guardNoCallback('storage.local.clear', rest);
@@ -42,6 +50,19 @@ const chrome = {
       __store: store,
       __reset() {
         store.clear();
+      },
+    },
+    // The real event is on storage, not on storage.local, and it reports the
+    // area as its second argument.
+    onChanged: {
+      addListener(listener) {
+        changeListeners.add(listener);
+      },
+      removeListener(listener) {
+        changeListeners.delete(listener);
+      },
+      __reset() {
+        changeListeners.clear();
       },
     },
   },

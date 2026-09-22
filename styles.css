@@ -3,7 +3,8 @@
    line. Everything here is namespaced with hncl- to keep clear of the site's
    very generic class names. */
 
-.hncl-button {
+.hncl-button,
+.hncl-share {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -25,7 +26,8 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-.hncl-button svg {
+.hncl-button svg,
+.hncl-share svg {
   width: 13px;
   height: 13px;
   fill: none;
@@ -36,12 +38,15 @@
 }
 
 .hncl-button:hover,
-.hncl-button:focus-visible {
+.hncl-button:focus-visible,
+.hncl-share:hover,
+.hncl-share:focus-visible {
   color: #ff6600;
   background: rgba(255, 102, 0, 0.12);
 }
 
-.hncl-button:focus-visible {
+.hncl-button:focus-visible,
+.hncl-share:focus-visible {
   outline: 1px solid #ff6600;
   outline-offset: 1px;
 }
@@ -88,13 +93,15 @@
 /* Hacker News serves a narrower layout to phones, where a 13px glyph is below
    a comfortable touch target. */
 @media (max-width: 640px) {
-  .hncl-button {
+  .hncl-button,
+  .hncl-share {
     width: 30px;
     height: 30px;
     margin-left: 6px;
   }
 
-  .hncl-button svg {
+  .hncl-button svg,
+  .hncl-share svg {
     width: 17px;
     height: 17px;
   }

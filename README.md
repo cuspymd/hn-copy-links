@@ -14,6 +14,22 @@ Hacker News made of it, without hunting for the discussion page yourself.
 A text post such as an Ask HN thread has no separate article, so it copies as
 one line.
 
+## Share on Android
+
+In Firefox for Android there is a share button beside the copy button. It opens
+Android's own share menu with both links in it, so you pick ChatGPT, Claude or
+any other app there and the links arrive in it - "copy, switch apps, paste"
+becomes one tap and one choice. Picking an app marks the row, as a copy does;
+closing the menu without a choice does not.
+
+On the desktop the button is not shown: Firefox has no share menu there, and
+Chrome's lists the system share targets rather than chat apps.
+
+It is on by default. Turn it off in the extension's settings:
+
+- Chrome: `chrome://extensions` -> HN Copy Links -> Details -> Extension options
+- Firefox: `about:addons` -> HN Copy Links -> Preferences
+
 ## Already copied
 
 Copying instead of clicking means the title never turns purple, so the button
@@ -59,7 +75,8 @@ Nightly. Leave the command running: it reinstalls the extension whenever
 
 ## Permissions
 
-`storage`, and access to `news.ycombinator.com`. Nothing else. The extension
+`storage`, and access to `news.ycombinator.com`. Nothing else - the share
+button uses the browser's own share menu, which needs no permission. The extension
 has no background process and sends no data anywhere. [PRIVACY.md](PRIVACY.md)
 spells that out.
 

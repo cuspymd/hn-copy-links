@@ -91,3 +91,11 @@ test('shows a short confirmation after a copy', async ({ hnPage }) => {
 
   await expect(bubble).toBeHidden({ timeout: 4000 });
 });
+
+// The share button is for Android's share sheet, and this is desktop
+// Chromium - which has navigator.share, but not the chat apps in its sheet.
+// What it does on a phone is covered by the unit suite and by hand.
+test('draws no share button on the desktop', async ({ hnPage }) => {
+  await expect(hnPage.locator(BUTTON)).toHaveCount(3);
+  await expect(hnPage.locator('.hncl-share')).toHaveCount(0);
+});
