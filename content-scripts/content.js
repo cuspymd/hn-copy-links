@@ -20,20 +20,39 @@
   // Two glyphs rather than two states of one: the copied mark has to be
   // readable at a glance down a list of thirty rows, and a colour change alone
   // is not (and is invisible to a colour-blind reader).
-  const COPY_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">'
-    + '<rect x="5.5" y="2.5" width="8" height="10" rx="1.5" />'
-    + '<path d="M10.5 13.5v0a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V5A1.5 1.5 0 0 1 4 3.5h0" />'
-    + '</svg>';
-  const COPIED_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">'
-    + '<path d="M2.5 8.5l4 4 7-8" />'
-    + '</svg>';
+  //
+  // Icons are shape lists built with DOM calls, not markup strings: AMO's
+  // linter rejects any innerHTML assignment, constant or not.
+  const COPY_ICON = [
+    ['rect', { x: '5.5', y: '2.5', width: '8', height: '10', rx: '1.5' }],
+    ['path', { d: 'M10.5 13.5v0a1.5 1.5 0 0 1-1.5 1.5H4a1.5 1.5 0 0 1-1.5-1.5V5A1.5 1.5 0 0 1 4 3.5h0' }],
+  ];
+  const COPIED_ICON = [
+    ['path', { d: 'M2.5 8.5l4 4 7-8' }],
+  ];
   // The share glyph Android itself uses, so a phone reader knows what it opens.
-  const SHARE_ICON = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">'
-    + '<circle cx="12" cy="3.5" r="1.75" />'
-    + '<circle cx="4" cy="8" r="1.75" />'
-    + '<circle cx="12" cy="12.5" r="1.75" />'
-    + '<path d="M5.5 7.15l5-2.8M5.5 8.85l5 2.8" />'
-    + '</svg>';
+  const SHARE_ICON = [
+    ['circle', { cx: '12', cy: '3.5', r: '1.75' }],
+    ['circle', { cx: '4', cy: '8', r: '1.75' }],
+    ['circle', { cx: '12', cy: '12.5', r: '1.75' }],
+    ['path', { d: 'M5.5 7.15l5-2.8M5.5 8.85l5 2.8' }],
+  ];
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  function createIcon(shapes) {
+    const svg = document.createElementNS(SVG_NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 16 16');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    for (const [tag, attributes] of shapes) {
+      const shape = document.createElementNS(SVG_NS, tag);
+      for (const [name, value] of Object.entries(attributes)) {
+        shape.setAttribute(name, value);
+      }
+      svg.appendChild(shape);
+    }
+    return svg;
+  }
 
   // Decided once: neither the browser nor the platform changes under a page.
   const shareAvailable = isShareSheetAvailable(navigator);
@@ -79,7 +98,7 @@
 
   function applyCopiedState(button, copied) {
     button.classList.toggle(COPIED_CLASS, copied);
-    button.innerHTML = copied ? COPIED_ICON : COPY_ICON;
+    button.replaceChildren(createIcon(copied ? COPIED_ICON : COPY_ICON));
     button.title = message(copied ? 'copiedButtonTitle' : 'copyButtonTitle');
     button.setAttribute('aria-label', button.title);
   }
@@ -151,7 +170,7 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.className = SHARE_CLASS;
-    button.innerHTML = SHARE_ICON;
+    button.replaceChildren(createIcon(SHARE_ICON));
     button.title = message('shareButtonTitle');
     button.setAttribute('aria-label', button.title);
     button.addEventListener('click', (event) => handleShareClick(event, button, copyButton, item));
