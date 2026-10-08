@@ -74,6 +74,8 @@ describe('manifests', () => {
       'shared/settings-core.js',
       'constants/storage-keys.js',
       'content-scripts/hn-core.js',
+      'content-scripts/lobsters-core.js',
+      'content-scripts/site-core.js',
       'content-scripts/copied-store-core.js',
       'content-scripts/share-core.js',
     ]) {
@@ -82,10 +84,25 @@ describe('manifests', () => {
     }
   });
 
-  test('ask for storage and Hacker News only', () => {
+  // Every host here is one the stores review and a reader is asked to grant,
+  // so the list only grows on purpose.
+  test('ask for storage and the two supported sites only', () => {
+    const sites = ['https://news.ycombinator.com/*', 'https://lobste.rs/*'];
     expect(chromeManifest.permissions).toEqual(['storage']);
-    expect(chromeManifest.host_permissions).toEqual(['https://news.ycombinator.com/*']);
-    expect(chromeManifest.content_scripts[0].matches).toEqual(['https://news.ycombinator.com/*']);
+    expect(chromeManifest.host_permissions).toEqual(sites);
+    expect(chromeManifest.content_scripts[0].matches).toEqual(sites);
+  });
+
+  // A host the content script is injected on with no site core to describe it
+  // draws nothing at all.
+  test('every matched host has a site core', async () => {
+    await import('../content-scripts/hn-core.js');
+    await import('../content-scripts/lobsters-core.js');
+    await import('../content-scripts/site-core.js');
+    for (const match of chromeManifest.content_scripts[0].matches) {
+      const { hostname } = new URL(match.replace('*', ''));
+      expect(window.SiteCore.siteForHostname(hostname)).not.toBeNull();
+    }
   });
 
   // The settings page is a second surface that has to survive a build: it

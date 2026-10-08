@@ -8,12 +8,14 @@
     "storage"
   ],
   "host_permissions": [
-    "https://news.ycombinator.com/*"
+    "https://news.ycombinator.com/*",
+    "https://lobste.rs/*"
   ],
   "content_scripts": [
     {
       "matches": [
-        "https://news.ycombinator.com/*"
+        "https://news.ycombinator.com/*",
+        "https://lobste.rs/*"
       ],
       "js": [
         "shared/logger.js",
@@ -22,6 +24,8 @@
         "shared/clipboard.js",
         "shared/settings-core.js",
         "content-scripts/hn-core.js",
+        "content-scripts/lobsters-core.js",
+        "content-scripts/site-core.js",
         "content-scripts/copied-store-core.js",
         "content-scripts/share-core.js",
         "content-scripts/content.js"

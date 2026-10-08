@@ -48,7 +48,7 @@ This is the section that stalls submissions. All four answers:
 **Single purpose**
 
 ```
-The extension adds a copy button to each Hacker News submission row. The button copies the story's article link and its Hacker News discussion link to the clipboard, and marks rows that were already copied.
+The extension adds a copy button to each Hacker News and Lobsters submission row. The button copies the story's article link and its discussion link on that site to the clipboard, and marks rows that were already copied.
 ```
 
 **Justification for `storage`**
@@ -57,10 +57,10 @@ The extension adds a copy button to each Hacker News submission row. The button 
 Stores the ids of stories the user has copied, so rows already copied can be marked. The list stays in the browser's local extension storage on that device and is never transmitted.
 ```
 
-**Justification for the `news.ycombinator.com` host permission**
+**Justification for the `news.ycombinator.com` and `lobste.rs` host permissions**
 
 ```
-The content script reads submission rows on Hacker News to build the two links and to insert the copy button. Hacker News is the only site the extension runs on.
+The content script reads submission rows on Hacker News and on Lobsters to build the two links and to insert the copy button. These two link aggregators are the only sites the extension runs on.
 ```
 
 **Data usage certification**

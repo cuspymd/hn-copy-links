@@ -66,6 +66,46 @@
   color: #ff6600;
 }
 
+/* Lobsters has a light and a dark theme and publishes its palette as custom
+   properties, so the buttons borrow those rather than Hacker News' fixed grey
+   and orange, and follow the theme with no colour scheme query of their own.
+   The fallbacks are its light theme, for a page whose stylesheet failed. */
+[data-hncl-site="lobsters"] .hncl-button,
+[data-hncl-site="lobsters"] .hncl-share {
+  color: var(--color-fg-contrast-5, #8a8a8a);
+}
+
+[data-hncl-site="lobsters"] .hncl-button:hover,
+[data-hncl-site="lobsters"] .hncl-button:focus-visible,
+[data-hncl-site="lobsters"] .hncl-share:hover,
+[data-hncl-site="lobsters"] .hncl-share:focus-visible {
+  color: var(--color-fg-link, #ac130d);
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+[data-hncl-site="lobsters"] .hncl-button:focus-visible,
+[data-hncl-site="lobsters"] .hncl-share:focus-visible {
+  outline-color: currentColor;
+}
+
+/* Lobsters outlines every focused button, so a mouse click would leave a box
+   around the one just clicked. The keyboard ring above stays. */
+[data-hncl-site="lobsters"] .hncl-button:focus:not(:focus-visible),
+[data-hncl-site="lobsters"] .hncl-share:focus:not(:focus-visible) {
+  outline: none;
+}
+
+[data-hncl-site="lobsters"] .hncl-button.hncl-copied {
+  color: var(--color-fg-contrast-4-5, #b0b0b0);
+  opacity: 0.6;
+}
+
+[data-hncl-site="lobsters"] .hncl-button.hncl-copied:hover,
+[data-hncl-site="lobsters"] .hncl-button.hncl-copied:focus-visible {
+  color: var(--color-fg-link, #ac130d);
+  opacity: 1;
+}
+
 /* The short confirmation after a click. It lives on the body and is placed
    from the button's rectangle, because Hacker News clips the title cell -
    see the comment in content.js. Fixed positioning also keeps it out of the

@@ -10,6 +10,7 @@ it opens the system share sheet with the same text, and the reader picks the
 chat app there. It is on by default and switchable on the settings page. Copied
 rows stay marked, so the list still separates
 into read and unread even though the titles were never clicked.
+The same buttons work on Lobsters (`lobste.rs`).
 Chrome, Firefox and Firefox for Android.
 
 ## Commands
@@ -28,14 +29,18 @@ as a temporary add-on via `about:debugging`.
 
 ## Design decisions
 
-- **Keep the permission list at `storage` and `news.ycombinator.com`.** Both
-  stores review it, and this one needs no explaining. That is the rule. There
+- **Keep the permission list at `storage`, `news.ycombinator.com` and
+  `lobste.rs`.** Both stores review it, and this one needs no explaining. That
+  is the rule. Another site is a decision, not a refactor: Chrome disables the
+  extension on update until the reader accepts a new host, and both store
+  listings, `PRIVACY.md` and the submission notes name every one. There
   is no background script only because nothing has needed one - the settings
   page reads and writes storage directly, and the content script hears the
   write through `storage.onChanged`. If something ever does need a background
   script, add one; it costs no permission.
-- **Pure logic goes in a core file**, not in `content.js`: `hn-core.js` (reading
-  a row, building URLs and the copied text), `copied-store-core.js` (the
+- **Pure logic goes in a core file**, not in `content.js`: `hn-core.js` and
+  `lobsters-core.js` (reading a row, building URLs and the copied text),
+  `site-core.js` (picking between them by hostname), `copied-store-core.js` (the
   copied-items map) and `share-core.js` (whether to offer a share sheet, and
   calling it). Each is an IIFE publishing one `window` namespace. Core
   files are importable, so tests reach them and coverage counts them;
@@ -55,6 +60,11 @@ as a temporary add-on via `about:debugging`.
   in the manifest's order, because those files find each other through
   `window`. Logic shared by both surfaces belongs in `shared/`, which is why
   `settings-core.js` lives there rather than beside the other cores.
+- **One content script, one `site` description per site.** Each site core
+  publishes a `site` object - row and title selectors, `parseRow`,
+  `buildCopyText`, `storeKey` - and `content.js` reaches the page only through
+  the one `site-core.js` picks. A new site is a core file, a line in
+  `siteCores()`, a host in both manifests, and its fixture.
 - A new script must be added to `content_scripts[0].js` in **both** manifests,
   before whatever reads it. `tests/packaging.test.js` fails if the manifests
   drift apart or a listed file is missing.
@@ -64,7 +74,18 @@ as a temporary add-on via `about:debugging`.
 - **The discussion link is built, not found.** `buildCommentsUrl` composes
   `item?id=<row id>` from the row's id. Reading the "N comments" anchor instead
   breaks on a submission with no comments, where it reads "discuss". An E2E test
-  covers that row.
+  covers that row. Lobsters is the same (`/s/<short id>`, and the anchor reads
+  "no comments"); the slug is left off because it is only the title again.
+- **A Lobsters text post links its own page with the slug on**
+  (`/s/<id>/<slug>`), so it cannot be told by comparing with the built link the
+  way Hacker News's can. `lobsters-core.js` compares the path's id instead.
+- **Copied marks share one map across sites.** Hacker News ids are stored bare,
+  as before Lobsters existed, so readers keep their marks; Lobsters ids go in as
+  `lobsters:<id>`, because a short id can be all digits. Always go through
+  `site.storeKey`.
+- **The site is picked from `document.baseURI`**, like the article link, so
+  the jsdom tests can stand in for either site with a `<base>`. Neither site
+  sets one.
 - **The article link resolves against `document.baseURI`**, not
   `location.href`. That is what the browser resolves the title link against, and
   it lets the jsdom tests stand in for a page served from Hacker News.
@@ -84,6 +105,11 @@ as a temporary add-on via `about:debugging`.
   happen.** Marking a row whose text never left makes the user skip an article
   they never read. A share marks the row only once it resolves; a sheet closed
   without a choice (`AbortError`) marks nothing and says nothing.
+- **Lobsters styles every `button`**: a border, padding, a hover background
+  and an outline on `:focus`. `styles.css` overrides each one under
+  `[data-hncl-site="lobsters"]`, which `content.js` sets on `<html>`. The
+  colours are the site's own custom properties, which is how the buttons follow
+  its dark theme; there is no colour scheme query of ours.
 - **Hacker News clips the title cell** with `overflow: hidden`, so anything
   drawn inside a row disappears the moment it reaches above the line. The
   confirmation bubble therefore hangs off the body and is placed from the
@@ -114,9 +140,11 @@ E2E only sees the default. It runs desktop Chromium, so it can only check that
 the share button stays away; the share itself is covered by the unit suite,
 which stands in `navigator.share` and an Android user agent.
 
-The content script only matches `news.ycombinator.com`, so E2E routes that
-origin on the browser context and fulfils it from `e2e-tests/news-list.html`, a
-trimmed copy of the front page. No network, and a redesign breaks the tests when
+The content script only matches the two sites, so E2E routes each origin on the
+browser context and fulfils it from a trimmed copy of its front page:
+`e2e-tests/news-list.html` and `e2e-tests/lobsters-list.html`. In unit tests,
+`lobstersStory()` and `loadContentScript({ url: 'https://lobste.rs/' })` do the
+same for Lobsters. No network, and a redesign breaks the tests when
 the fixture is updated rather than at random. Two platform details live in the
 fixtures: Windows returns clipboard text with CRLF, and Chrome takes the
 extension's locale from its UI language (`--lang=en-US`). A failure that makes

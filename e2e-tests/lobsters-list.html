@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!-- A trimmed copy of the Lobsters front page markup: the story markup is what
+     the content script reads, so it is reproduced as the site serves it. Story
+     2 has no comments yet; story 3 is a text post, whose title points at its
+     own story page with the slug on. The palette is a cut of the site's light
+     theme custom properties, which styles.css borrows. -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lobsters</title>
+  <style>
+    :root {
+      --color-fg-link: #ac130d;
+      --color-fg-contrast-5: #7a7a7a;
+      --color-fg-contrast-4-5: #8f8f8f;
+    }
+    body { font-family: system-ui, sans-serif; background: #fefefe; color: #333; }
+    ol.stories { list-style: none; padding: 0; }
+    li.story div.story_liner { padding: 0.25em 0; overflow-wrap: break-word; }
+    li.story .voters { float: left; width: 40px; text-align: center; }
+    li.story div.details span.link a { color: var(--color-fg-link); text-decoration: none; }
+    li .tags { display: inline-block; margin: 0 0.25em 0 0; padding: 0; list-style: none; }
+    li .tags li { display: inline; }
+    .byline, .domain { color: #888; font-size: 0.9em; }
+    /* The site outlines every focused button. Kept so the fixture shows
+       whether a clicked button is left boxed. */
+    button:focus { outline: 1px solid #f00; }
+  </style>
+</head>
+<body>
+<ol class="stories list">
+<li id="story_aaa111" data-shortid="aaa111" class="story">
+<div class="story_liner h-entry">
+  <div class="voters"><a class="upvoter" href="/login">52</a></div>
+  <div class="details">
+    <span role="heading" aria-level="1" class="link h-cite u-repost-of">
+        <a class="u-url" href="https://example.com/holding-up-the-internet" rel="ugc noreferrer">The people holding up the internet</a>
+    </span>
+      <ul class="tags" aria-label="Tags">
+          <li><a aria-label="Tag historical" class="tag tag_historical" href="/t/historical">historical</a></li>
+      </ul>
+        <a class="domain" href="/domains/example.com">example.com</a>
+    <div class="byline">
+        <a class="u-author h-card" href="/~someone">someone</a>
+          <span class="comments_label">
+            <span aria-hidden="true"> | </span>
+            <a role="heading" aria-level="2" href="/s/aaa111/people_holding_up_internet">13 comments</a>
+          </span>
+    </div>
+  </div>
+</div>
+<a href="/s/aaa111/people_holding_up_internet" class="mobile_comments" style="display: none;"><span>13</span></a>
+</li>
+<li id="story_bbb222" data-shortid="bbb222" class="story">
+<div class="story_liner h-entry">
+  <div class="voters"><a class="upvoter" href="/login">3</a></div>
+  <div class="details">
+    <span role="heading" aria-level="1" class="link h-cite u-repost-of">
+        <a class="u-url" href="https://example.org/fresh" rel="ugc noreferrer">A story nobody has discussed yet</a>
+    </span>
+      <ul class="tags" aria-label="Tags">
+          <li><a aria-label="Tag rust" class="tag tag_rust" href="/t/rust">rust</a></li>
+      </ul>
+        <a class="domain" href="/domains/example.org">example.org</a>
+    <div class="byline">
+        <a class="u-author h-card" href="/~someone">someone</a>
+          <span class="comments_label">
+            <span aria-hidden="true"> | </span>
+            <a role="heading" aria-level="2" href="/s/bbb222/story_nobody_has_discussed_yet">no comments</a>
+          </span>
+    </div>
+  </div>
+</div>
+<a href="/s/bbb222/story_nobody_has_discussed_yet" class="mobile_comments zero" style="display: none;"><span>0</span></a>
+</li>
+<li id="story_ccc333" data-shortid="ccc333" class="story">
+<div class="story_liner h-entry">
+  <div class="voters"><a class="upvoter" href="/login">20</a></div>
+  <div class="details">
+    <span role="heading" aria-level="1" class="link h-cite u-repost-of">
+        <a class="u-url" href="/s/ccc333/what_are_you_doing_this_week" rel="ugc noreferrer">What are you doing this week?</a>
+    </span>
+      <ul class="tags" aria-label="Tags">
+          <li><a aria-label="Tag ask" class="tag tag_ask" href="/t/ask">ask</a></li>
+      </ul>
+    <div class="byline">
+        <a class="u-author h-card" href="/~someone">someone</a>
+          <span class="comments_label">
+            <span aria-hidden="true"> | </span>
+            <a role="heading" aria-level="2" href="/s/ccc333/what_are_you_doing_this_week">40 comments</a>
+          </span>
+    </div>
+  </div>
+</div>
+<a href="/s/ccc333/what_are_you_doing_this_week" class="mobile_comments" style="display: none;"><span>40</span></a>
+</li>
+</ol>
+<div class="morelink"><a rel="next" href="/page/2">Page 2 &gt;&gt;</a></div>
+</body>
+</html>

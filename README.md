@@ -14,6 +14,19 @@ Hacker News made of it, without hunting for the discussion page yourself.
 A text post such as an Ask HN thread has no separate article, so it copies as
 one line.
 
+## Lobsters
+
+The same buttons appear on [Lobsters](https://lobste.rs/), beside every story
+title, in the site's own colours and its dark theme:
+
+```
+Article: https://example.com/holding-up-the-internet
+Lobsters discussion: https://lobste.rs/s/lhr4oy
+```
+
+A text post copies as one line there too. Copied marks are kept per site, so a
+story copied on one never shows as copied on the other.
+
 ## Share on Android
 
 In Firefox for Android there is a share button beside the copy button. It opens
@@ -75,7 +88,7 @@ Nightly. Leave the command running: it reinstalls the extension whenever
 
 ## Permissions
 
-`storage`, and access to `news.ycombinator.com`. Nothing else - the share
+`storage`, and access to `news.ycombinator.com` and `lobste.rs`. Nothing else - the share
 button uses the browser's own share menu, which needs no permission. The extension
 has no background process and sends no data anywhere. [PRIVACY.md](PRIVACY.md)
 spells that out.
@@ -85,7 +98,7 @@ spells that out.
 ```bash
 npm test                 # unit and integration tests
 npm run deploy:chrome    # build what the E2E tests load
-npm run test:e2e         # Playwright, against a saved copy of the HN markup
+npm run test:e2e         # Playwright, against saved copies of the HN and Lobsters markup
 ```
 
 `AGENTS.md` has the details worth knowing before changing anything.

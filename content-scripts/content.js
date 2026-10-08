@@ -1,8 +1,8 @@
-// Puts a copy button - and, on Android, a share button - on every Hacker News
-// submission row, and keeps the "already copied" marks in sync with extension
-// local storage.
+// Puts a copy button - and, on Android, a share button - on every submission
+// row of Hacker News or Lobsters, and keeps the "already copied" marks in sync
+// with extension local storage.
 (function () {
-  const { parseRow, buildCopyText } = window.HnCore;
+  const { siteForHostname } = window.SiteCore;
   const { markCopied, isCopied } = window.CopiedStoreCore;
   const { normalizeSettings } = window.SettingsCore;
   const { isShareSheetAvailable, shareText } = window.ShareCore;
@@ -56,6 +56,11 @@
 
   // Decided once: neither the browser nor the platform changes under a page.
   const shareAvailable = isShareSheetAvailable(navigator);
+
+  // The site is read off baseURI for the same reason the links are resolved
+  // against it: neither site sets a <base>, and it lets the jsdom tests stand
+  // in for a page served from either one.
+  const site = siteForHostname(new URL(document.baseURI).hostname);
 
   function message(name) {
     return browserAPI.i18n?.getMessage(name) || name;
@@ -132,7 +137,7 @@
     event.preventDefault();
     event.stopPropagation();
 
-    const copied = await window.copyTextToClipboard(buildCopyText(item));
+    const copied = await window.copyTextToClipboard(site.buildCopyText(item));
     if (!copied) {
       showFeedback(button, message('copyFailedFeedback'));
       return;
@@ -140,7 +145,7 @@
 
     showFeedback(button, message('copiedFeedback'));
     applyCopiedState(button, true);
-    copiedItems = markCopied(copiedItems, item.itemId);
+    copiedItems = markCopied(copiedItems, site.storeKey(item.itemId));
     await persistCopiedItems();
   }
 
@@ -152,7 +157,7 @@
     event.stopPropagation();
 
     // No await before this call - see shareText.
-    const result = await shareText(navigator, buildCopyText(item));
+    const result = await shareText(navigator, site.buildCopyText(item));
     if (result === 'failed') {
       showFeedback(shareButton, message('shareFailedFeedback'));
       return;
@@ -162,7 +167,7 @@
     if (result !== 'shared') return;
 
     applyCopiedState(copyButton, true);
-    copiedItems = markCopied(copiedItems, item.itemId);
+    copiedItems = markCopied(copiedItems, site.storeKey(item.itemId));
     await persistCopiedItems();
   }
 
@@ -186,8 +191,8 @@
   function applyShareSetting(root = document) {
     const wanted = wantsShareButton();
 
-    root.querySelectorAll('tr.athing').forEach((row) => {
-      const titleline = row.querySelector('.titleline');
+    root.querySelectorAll(site.rowSelector).forEach((row) => {
+      const titleline = row.querySelector(site.titleSelector);
       const copyButton = titleline?.querySelector(`.${BUTTON_CLASS}`);
       if (!copyButton) return;
 
@@ -198,7 +203,7 @@
       }
       if (existing) return;
 
-      const item = parseRow(row, document.baseURI);
+      const item = site.parseRow(row, document.baseURI);
       if (item) titleline.appendChild(createShareButton(item, copyButton));
     });
   }
@@ -208,10 +213,10 @@
 
     // baseURI rather than location.href: it is what the browser itself
     // resolves the title link against.
-    const item = parseRow(row, document.baseURI);
+    const item = site.parseRow(row, document.baseURI);
     if (!item) return;
 
-    const titleline = row.querySelector('.titleline');
+    const titleline = row.querySelector(site.titleSelector);
     if (!titleline) return;
 
     row.dataset.hnclDecorated = 'true';
@@ -219,7 +224,7 @@
     const button = document.createElement('button');
     button.type = 'button';
     button.className = BUTTON_CLASS;
-    applyCopiedState(button, isCopied(copiedItems, item.itemId));
+    applyCopiedState(button, isCopied(copiedItems, site.storeKey(item.itemId)));
     button.addEventListener('click', (event) => handleClick(event, button, item));
 
     titleline.appendChild(button);
@@ -230,10 +235,10 @@
   }
 
   function decorateAll(root = document) {
-    root.querySelectorAll('tr.athing').forEach(addButton);
+    root.querySelectorAll(site.rowSelector).forEach(addButton);
   }
 
-  // Hacker News renders on the server, so one pass covers every page. The
+  // Both sites render on the server, so one pass covers every page. The
   // observer is a safety net for rows added by another extension or by a
   // future in-page "more" control; rows already carrying the marker are skipped.
   let observer = null;
@@ -243,7 +248,7 @@
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
           if (node.nodeType !== Node.ELEMENT_NODE) continue;
-          if (node.matches?.('tr.athing')) addButton(node);
+          if (node.matches?.(site.rowSelector)) addButton(node);
           else decorateAll(node);
         }
       }
@@ -271,6 +276,8 @@
   }
 
   async function init() {
+    // Tells styles.css which site's colours to wear.
+    document.documentElement.dataset.hnclSite = site.name;
     await Promise.all([loadCopiedItems(), loadSettings()]);
     decorateAll();
     watchForNewRows();
@@ -285,8 +292,17 @@
       clearTimeout(bubbleTimer);
       bubble?.remove();
       bubble = null;
+      delete document.documentElement.dataset.hnclSite;
     },
   };
+
+  // The manifest only injects on supported sites, so this is a page the
+  // matches and the site cores disagree about - a bug, but not one that
+  // should throw on somebody's page.
+  if (!site) {
+    window.errorLog('No site description for this page', document.baseURI);
+    return;
+  }
 
   init();
 })();
