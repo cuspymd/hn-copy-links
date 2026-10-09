@@ -28,6 +28,20 @@
     return pruneCopied({ ...(map || {}), [itemId]: now }, now);
   }
 
+  /**
+   * Both maps' entries, keeping the later copy time where they share an item.
+   * Another tab may have written the stored map since this one read it, so a
+   * write starts from the two merged rather than from either alone.
+   */
+  function mergeCopied(a, b, now = Date.now()) {
+    const merged = { ...(a || {}) };
+    for (const [itemId, copiedAt] of Object.entries(b || {})) {
+      if (!isValidEntry(copiedAt)) continue;
+      if (!isValidEntry(merged[itemId]) || copiedAt > merged[itemId]) merged[itemId] = copiedAt;
+    }
+    return pruneCopied(merged, now);
+  }
+
   function isCopied(map, itemId) {
     return isValidEntry(map?.[itemId]);
   }
@@ -37,6 +51,7 @@
     MAX_ENTRIES,
     pruneCopied,
     markCopied,
+    mergeCopied,
     isCopied,
   };
 })();

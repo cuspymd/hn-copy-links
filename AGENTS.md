@@ -154,6 +154,9 @@ no sense is usually a stale `dist/`.
 
 Two keys, both in extension local storage, and `constants/storage-keys.js` owns
 both names. `copiedItems`: item id to the epoch ms of the last copy.
+A tab's map goes stale once another tab records a copy, so `recordCopy`
+re-reads the stored map and merges it (`mergeCopied`) before every write;
+writing the tab's own map back whole would erase the other tab's marks.
 `settings`: the map in `shared/settings-core.js`, today just `shareButton`.
 Read it through `normalizeSettings`, never straight off storage - an older
 version may know fewer keys, and a half-filled map must not reach a caller. Local rather than

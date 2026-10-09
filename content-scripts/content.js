@@ -3,7 +3,7 @@
 // with extension local storage.
 (function () {
   const { siteForHostname } = window.SiteCore;
-  const { markCopied, isCopied } = window.CopiedStoreCore;
+  const { markCopied, mergeCopied, isCopied } = window.CopiedStoreCore;
   const { normalizeSettings } = window.SettingsCore;
   const { isShareSheetAvailable, shareText } = window.ShareCore;
   const browserAPI = window.browserAPI;
@@ -93,7 +93,19 @@
     }
   }
 
-  async function persistCopiedItems() {
+  // The map read at load goes stale as soon as another tab - this site or the
+  // other one - records a copy, and writing it back whole would erase those
+  // marks. So the stored map is read again and merged in just before the write.
+  async function recordCopy(item) {
+    let stored = {};
+    try {
+      stored = (await browserAPI.storage.local.get(COPIED_ITEMS_KEY))?.[COPIED_ITEMS_KEY] || {};
+    } catch (error) {
+      // Without the stored map this tab's own is the best there is.
+      window.errorLog('Failed to read copied items', error);
+    }
+    copiedItems = markCopied(mergeCopied(copiedItems, stored), site.storeKey(item.itemId));
+
     try {
       await browserAPI.storage.local.set({ [COPIED_ITEMS_KEY]: copiedItems });
     } catch (error) {
@@ -145,8 +157,7 @@
 
     showFeedback(button, message('copiedFeedback'));
     applyCopiedState(button, true);
-    copiedItems = markCopied(copiedItems, site.storeKey(item.itemId));
-    await persistCopiedItems();
+    await recordCopy(item);
   }
 
   // Hands the same text a copy would write to the share sheet, so a chat app
@@ -167,8 +178,7 @@
     if (result !== 'shared') return;
 
     applyCopiedState(copyButton, true);
-    copiedItems = markCopied(copiedItems, site.storeKey(item.itemId));
-    await persistCopiedItems();
+    await recordCopy(item);
   }
 
   function createShareButton(item, copyButton) {

@@ -230,6 +230,34 @@ describe('copied marks', () => {
     expect(buttons()[0].classList.contains('hncl-copied')).toBe(true);
   });
 
+  // Another tab - on this site or the other - holds its own map from when it
+  // loaded. A copy here must not write that stale map over the other tab's.
+  test('keeps a mark another tab stored after this page loaded', async () => {
+    await loadContentScript({ html: listPage(ROWS) });
+    await chrome.storage.local.set({ [STORAGE_KEY]: { 'lobsters:abc123': Date.now() } });
+
+    buttons()[0].click();
+    await flushPromises();
+
+    const stored = await chrome.storage.local.get(STORAGE_KEY);
+    expect(Object.keys(stored[STORAGE_KEY]).sort()).toEqual(['41000', 'lobsters:abc123']);
+  });
+
+  test('still saves the copy when the re-read before the write fails', async () => {
+    await loadContentScript({ html: listPage(ROWS) });
+    const get = jest.spyOn(chrome.storage.local, 'get').mockRejectedValue(new Error('no storage'));
+    try {
+      buttons()[0].click();
+      await flushPromises();
+    } finally {
+      get.mockRestore();
+    }
+
+    expect(buttons()[0].classList.contains('hncl-copied')).toBe(true);
+    const stored = await chrome.storage.local.get(STORAGE_KEY);
+    expect(Object.keys(stored[STORAGE_KEY])).toEqual(['41000']);
+  });
+
   test('still draws buttons when the storage read fails', async () => {
     const get = jest.spyOn(chrome.storage.local, 'get').mockRejectedValue(new Error('no storage'));
     try {

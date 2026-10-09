@@ -49,6 +49,24 @@ test('keeps the mark after a reload, without marking Hacker News', async ({ cont
   await hn.close();
 });
 
+// Each tab holds the map it read at load. A copy in the tab opened first must
+// not write that stale map over a mark the other tab stored since.
+test('a copy in one tab keeps the marks another tab made meanwhile', async ({ context, lobstersPage }) => {
+  const hn = await context.newPage();
+  await hn.goto(HN_URL);
+  await expect(hn.locator(BUTTON)).toHaveCount(3);
+
+  await hn.locator(BUTTON).first().click();
+  await expect(hn.locator(BUTTON).first()).toHaveClass(/hncl-copied/);
+  await lobstersPage.locator(BUTTON).first().click();
+  await expect(lobstersPage.locator(BUTTON).first()).toHaveClass(/hncl-copied/);
+
+  await hn.reload();
+  await expect(hn.locator(BUTTON)).toHaveCount(3);
+  await expect(hn.locator(BUTTON).first()).toHaveClass(/hncl-copied/);
+  await hn.close();
+});
+
 test('shows the confirmation above the button', async ({ lobstersPage }) => {
   const button = lobstersPage.locator(BUTTON).first();
   const bubble = lobstersPage.locator('.hncl-bubble');
