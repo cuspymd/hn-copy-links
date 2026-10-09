@@ -1,6 +1,6 @@
 import '../content-scripts/copied-store-core.js';
 
-const { pruneCopied, markCopied, isCopied, MAX_AGE_MS, MAX_ENTRIES } = window.CopiedStoreCore;
+const { pruneCopied, markCopied, mergeCopied, isCopied, MAX_AGE_MS, MAX_ENTRIES } = window.CopiedStoreCore;
 const NOW = 1_760_000_000_000;
 
 describe('markCopied', () => {
@@ -26,6 +26,26 @@ describe('markCopied', () => {
     const original = { 6: NOW };
     markCopied(original, '7', NOW);
     expect(original).toEqual({ 6: NOW });
+  });
+});
+
+describe('mergeCopied', () => {
+  test('keeps the items of both maps', () => {
+    expect(mergeCopied({ 6: NOW - 1000 }, { 'lobsters:abc': NOW - 2000 }, NOW))
+      .toEqual({ 6: NOW - 1000, 'lobsters:abc': NOW - 2000 });
+  });
+
+  test('keeps the later time for an item in both', () => {
+    expect(mergeCopied({ 7: NOW - 5000 }, { 7: NOW - 1000 }, NOW)).toEqual({ 7: NOW - 1000 });
+    expect(mergeCopied({ 7: NOW - 1000 }, { 7: NOW - 5000 }, NOW)).toEqual({ 7: NOW - 1000 });
+  });
+
+  test('does not let a broken entry replace a good one', () => {
+    expect(mergeCopied({ 7: NOW }, { 7: 'later' }, NOW)).toEqual({ 7: NOW });
+  });
+
+  test('tolerates missing maps', () => {
+    expect(mergeCopied(null, undefined, NOW)).toEqual({});
   });
 });
 

@@ -36,10 +36,13 @@ HN discussion: https://news.ycombinator.com/item?id=41000001
 Hacker News의 모든 목록에서 동작합니다. 첫 화면, new, best, ask, show, past,
 사용자 제출 목록, 사이트별 목록까지 제목이 있는 곳이면 버튼이 붙습니다.
 
+Lobsters(lobste.rs)의 모든 글 목록에서도 사이트 색상과 다크 테마에 맞춰
+동작합니다. 이때 두 번째 줄은 "Lobsters discussion"이 됩니다.
+
 개인정보와 권한
 
 필요한 권한은 두 가지입니다. 복사한 글 목록을 저장하기 위한 storage,
-그리고 유일하게 접근하는 사이트인 news.ycombinator.com 입니다. 백그라운드
+그리고 접근하는 사이트인 news.ycombinator.com 과 lobste.rs 입니다. 백그라운드
 프로세스도, 분석 도구도, 자체 네트워크 요청도 없습니다. 사용 내역이 브라우저를
 떠나지 않습니다.
 

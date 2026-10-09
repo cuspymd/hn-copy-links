@@ -10,8 +10,8 @@ does happens inside your browser.
 
 ## What the extension stores
 
-Two things. The numeric ids of the Hacker News stories whose links you have
-copied, each with the time you copied it - this is what lets the extension dim
+Two things. The ids of the Hacker News and Lobsters stories whose links you
+have copied, each with the time you copied it - this is what lets the extension dim
 the button on a story you have already dealt with. And your settings, which at
 present means whether the share button is shown.
 
@@ -39,15 +39,16 @@ you would rather it were not there.
 
 ## What the extension can access
 
-The extension runs only on `news.ycombinator.com`. On those pages it reads
-story rows in order to build the two links and to place its buttons. It does
+The extension runs only on `news.ycombinator.com` and `lobste.rs`. On those
+pages it reads story rows in order to build the two links and to place its buttons. It does
 not run on any other site and cannot see any other site, nor anything inside
 the app you share to.
 
 It asks for exactly two permissions:
 
 - `storage` - for the copied story ids and the settings described above.
-- Access to `news.ycombinator.com` - the only site it works on.
+- Access to `news.ycombinator.com` and `lobste.rs` - the only two sites it
+  works on.
 
 ## The clipboard
 

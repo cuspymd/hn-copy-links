@@ -1,4 +1,6 @@
-import { loadContentScript, listPage, submissionRow, flushPromises } from './helpers/content-script.js';
+import {
+  loadContentScript, listPage, submissionRow, lobstersPage, lobstersStory, flushPromises,
+} from './helpers/content-script.js';
 
 const STORAGE_KEY = 'copiedItems';
 const SETTINGS_KEY = 'settings';
@@ -228,6 +230,34 @@ describe('copied marks', () => {
     expect(buttons()[0].classList.contains('hncl-copied')).toBe(true);
   });
 
+  // Another tab - on this site or the other - holds its own map from when it
+  // loaded. A copy here must not write that stale map over the other tab's.
+  test('keeps a mark another tab stored after this page loaded', async () => {
+    await loadContentScript({ html: listPage(ROWS) });
+    await chrome.storage.local.set({ [STORAGE_KEY]: { 'lobsters:abc123': Date.now() } });
+
+    buttons()[0].click();
+    await flushPromises();
+
+    const stored = await chrome.storage.local.get(STORAGE_KEY);
+    expect(Object.keys(stored[STORAGE_KEY]).sort()).toEqual(['41000', 'lobsters:abc123']);
+  });
+
+  test('still saves the copy when the re-read before the write fails', async () => {
+    await loadContentScript({ html: listPage(ROWS) });
+    const get = jest.spyOn(chrome.storage.local, 'get').mockRejectedValue(new Error('no storage'));
+    try {
+      buttons()[0].click();
+      await flushPromises();
+    } finally {
+      get.mockRestore();
+    }
+
+    expect(buttons()[0].classList.contains('hncl-copied')).toBe(true);
+    const stored = await chrome.storage.local.get(STORAGE_KEY);
+    expect(Object.keys(stored[STORAGE_KEY])).toEqual(['41000']);
+  });
+
   test('still draws buttons when the storage read fails', async () => {
     const get = jest.spyOn(chrome.storage.local, 'get').mockRejectedValue(new Error('no storage'));
     try {
@@ -425,5 +455,106 @@ describe('the share button', () => {
     await flushPromises();
 
     expect(shareButtons()).toHaveLength(2);
+  });
+});
+
+describe('on Lobsters', () => {
+  const LOBSTERS_URL = 'https://lobste.rs/';
+  const STORIES = [
+    { id: 'lhr4oy', title: 'The people holding up the internet', href: 'https://sheets.works/a', domain: 'sheets.works' },
+    { id: 'xff77a', title: 'What are you reading?', href: '/s/xff77a/what_are_you_reading' },
+  ];
+
+  function loadLobsters(stories = STORIES) {
+    return loadContentScript({ html: lobstersPage(stories), url: LOBSTERS_URL });
+  }
+
+  test('adds one button per story, in the title line after the title', async () => {
+    await loadLobsters();
+
+    expect(buttons()).toHaveLength(2);
+    for (const button of buttons()) {
+      expect(button.parentElement.matches('.details .link')).toBe(true);
+      expect(button.previousElementSibling.matches('a.u-url')).toBe(true);
+    }
+  });
+
+  test('writes the article and the discussion for a link story', async () => {
+    await loadLobsters();
+
+    buttons()[0].click();
+    await flushPromises();
+
+    expect(writeText()).toHaveBeenCalledWith([
+      'Article: https://sheets.works/a',
+      'Lobsters discussion: https://lobste.rs/s/lhr4oy',
+    ].join('\n'));
+  });
+
+  test('writes one link for a text post', async () => {
+    await loadLobsters();
+
+    buttons()[1].click();
+    await flushPromises();
+
+    expect(writeText()).toHaveBeenCalledWith('Lobsters discussion: https://lobste.rs/s/xff77a');
+  });
+
+  test('stores its marks apart from Hacker News ids', async () => {
+    await loadLobsters();
+
+    buttons()[0].click();
+    await flushPromises();
+
+    expect(buttons()[0].classList.contains('hncl-copied')).toBe(true);
+    const stored = await chrome.storage.local.get(STORAGE_KEY);
+    expect(Object.keys(stored[STORAGE_KEY])).toEqual(['lobsters:lhr4oy']);
+  });
+
+  // The ids share one map. A Hacker News item whose number happens to be an
+  // all-digit short id must not show up as copied here.
+  test('is not marked by a Hacker News copy of the same id', async () => {
+    await chrome.storage.local.set({ [STORAGE_KEY]: { 123456: Date.now(), 'lobsters:xff77a': Date.now() } });
+
+    await loadLobsters([{ ...STORIES[0], id: '123456' }, STORIES[1]]);
+
+    expect(buttons()[0].classList.contains('hncl-copied')).toBe(false);
+    expect(buttons()[1].classList.contains('hncl-copied')).toBe(true);
+  });
+
+  test('decorates stories added after load', async () => {
+    await loadLobsters([STORIES[0]]);
+
+    document.querySelector('ol').insertAdjacentHTML('beforeend', lobstersStory(STORIES[1]));
+    await flushPromises();
+
+    expect(buttons()).toHaveLength(2);
+  });
+
+  test('shares on Android like on Hacker News', async () => {
+    const share = withShareSheet();
+    await loadLobsters();
+
+    expect(shareButtons()).toHaveLength(2);
+    shareButtons()[1].click();
+    await flushPromises();
+
+    expect(share).toHaveBeenCalledWith({ text: 'Lobsters discussion: https://lobste.rs/s/xff77a' });
+    expect(buttons()[1].classList.contains('hncl-copied')).toBe(true);
+  });
+
+  test('tells the stylesheet which site it is on, and takes it back on dispose', async () => {
+    await loadLobsters();
+    expect(document.documentElement.dataset.hnclSite).toBe('lobsters');
+
+    window.hnCopyLinks.dispose();
+    expect(document.documentElement.dataset.hnclSite).toBeUndefined();
+  });
+});
+
+describe('on a page no site core describes', () => {
+  test('draws nothing and does not throw', async () => {
+    await loadContentScript({ html: listPage(ROWS), url: 'https://example.com/' });
+    expect(buttons()).toHaveLength(0);
   });
 });

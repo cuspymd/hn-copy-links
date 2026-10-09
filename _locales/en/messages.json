@@ -4,7 +4,7 @@
     "description": "Extension name"
   },
   "extensionDescription": {
-    "message": "Copy a Hacker News article link and its discussion link with one click.",
+    "message": "Copy a Hacker News or Lobsters article link and its discussion link with one click.",
     "description": "Extension description"
   },
   "copyButtonTitle": {

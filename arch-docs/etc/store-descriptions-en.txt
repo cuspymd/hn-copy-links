@@ -37,12 +37,15 @@ WHERE IT WORKS
 Every Hacker News list: the front page, new, best, ask, show, past, a user's
 submissions and the per-site pages. The button lands wherever a headline does.
 
+Lobsters (lobste.rs) too, on every story list, in the site's own colours and
+dark theme. There the second line reads "Lobsters discussion".
+
 PRIVACY AND PERMISSIONS
 
 The extension asks for two things: storage, for the list of stories you copied,
-and access to news.ycombinator.com, which is the only site it touches. There is
-no background process, no analytics and no network request of its own. Nothing
-you do leaves your browser.
+and access to news.ycombinator.com and lobste.rs, the only sites it touches.
+There is no background process, no analytics and no network request of its own.
+Nothing you do leaves your browser.
 
 The source is open and the whole extension is a few hundred lines:
 https://github.com/cuspymd/hn-copy-links

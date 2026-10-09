@@ -4,7 +4,7 @@
     "description": "Extension name"
   },
   "extensionDescription": {
-    "message": "Hacker News 기사 링크와 댓글 링크를 한 번의 클릭으로 복사합니다.",
+    "message": "Hacker News와 Lobsters의 기사 링크와 댓글 링크를 한 번의 클릭으로 복사합니다.",
     "description": "Extension description"
   },
   "copyButtonTitle": {

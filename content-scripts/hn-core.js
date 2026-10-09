@@ -90,5 +90,17 @@
     toAbsoluteUrl,
     parseRow,
     buildCopyText,
+    // What content.js needs to decorate this site; see site-core.js. Hacker
+    // News ids are stored bare, as they were before a second site existed, so
+    // the marks already on a reader's device keep working.
+    site: {
+      name: 'hn',
+      hostname: 'news.ycombinator.com',
+      rowSelector: 'tr.athing',
+      titleSelector: '.titleline',
+      storeKey: (itemId) => itemId,
+      parseRow,
+      buildCopyText,
+    },
   };
 })();
