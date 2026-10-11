@@ -28,11 +28,14 @@ describe('getItemId', () => {
 });
 
 describe('buildCommentsUrl', () => {
-  // Built from the id rather than read off the comments anchor, which reads
-  // "no comments" on a fresh story, and without the slug, which is only the
-  // title in another form.
-  test('points at the story page on the canonical origin', () => {
-    expect(buildCommentsUrl('lhr4oy')).toBe('https://lobste.rs/s/lhr4oy');
+  test('points at the story page on the canonical origin, slug on', () => {
+    expect(buildCommentsUrl('lhr4oy', 'people_holding')).toBe('https://lobste.rs/s/lhr4oy/people_holding');
+  });
+
+  // Logged out, the bare `/s/<id>` is served from a cache frozen at the
+  // story's first minutes. The trailing slash is a path of its own.
+  test('never falls back to the bare /s/<id>', () => {
+    expect(buildCommentsUrl('lhr4oy')).toBe('https://lobste.rs/s/lhr4oy/');
   });
 });
 
@@ -56,9 +59,30 @@ describe('parseRow', () => {
       itemId: 'lhr4oy',
       title: 'The people holding up the internet',
       articleUrl: 'https://sheets.works/a',
-      commentsUrl: 'https://lobste.rs/s/lhr4oy',
+      commentsUrl: 'https://lobste.rs/s/lhr4oy/a_slug',
       isSelfPost: false,
     });
+  });
+
+  // The anchor reads "no comments" on a fresh story; its href is all that is
+  // read, and it carries the slug either way.
+  test('takes the slug from the comments link of a story with no comments', () => {
+    const row = storyFrom(lobstersStory({ id: 'lhr4oy', title: 'Fresh', href: 'https://example.com/', slug: 'fresh_story' }));
+    expect(parseRow(row, BASE).commentsUrl).toBe('https://lobste.rs/s/lhr4oy/fresh_story');
+  });
+
+  test('falls back to the mobile comments link', () => {
+    const row = storyFrom(lobstersStory({ id: 'lhr4oy', title: 'Fresh', href: 'https://example.com/', slug: 'fresh_story' }));
+    row.querySelector('.comments_label').remove();
+    expect(parseRow(row, BASE).commentsUrl).toBe('https://lobste.rs/s/lhr4oy/fresh_story');
+  });
+
+  test('ends in a slash when no comments link names the story', () => {
+    const row = storyFrom(lobstersStory({ id: 'lhr4oy', title: 'Fresh', href: 'https://example.com/' }));
+    for (const link of row.querySelectorAll('.comments_label a, a.mobile_comments')) {
+      link.setAttribute('href', '/s/zzzzzz/another_story');
+    }
+    expect(parseRow(row, BASE).commentsUrl).toBe('https://lobste.rs/s/lhr4oy/');
   });
 
   // The title of a text post links its own story page, slug included, so an
@@ -68,7 +92,7 @@ describe('parseRow', () => {
     const item = parseRow(row, BASE);
 
     expect(item.isSelfPost).toBe(true);
-    expect(item.commentsUrl).toBe('https://lobste.rs/s/xff77a');
+    expect(item.commentsUrl).toBe('https://lobste.rs/s/xff77a/a_slug');
   });
 
   test('does not take a link to another story for a text post', () => {
@@ -94,16 +118,16 @@ describe('parseRow', () => {
 describe('buildCopyText', () => {
   test('two lines for a link story', () => {
     expect(buildCopyText({
-      articleUrl: 'https://sheets.works/a', commentsUrl: 'https://lobste.rs/s/lhr4oy', isSelfPost: false,
+      articleUrl: 'https://sheets.works/a', commentsUrl: 'https://lobste.rs/s/lhr4oy/a_slug', isSelfPost: false,
     })).toBe([
       'Article: https://sheets.works/a',
-      'Lobsters discussion: https://lobste.rs/s/lhr4oy',
+      'Lobsters discussion: https://lobste.rs/s/lhr4oy/a_slug',
     ].join('\n'));
   });
 
   test('one line for a text post', () => {
-    expect(buildCopyText({ commentsUrl: 'https://lobste.rs/s/xff77a', isSelfPost: true }))
-      .toBe('Lobsters discussion: https://lobste.rs/s/xff77a');
+    expect(buildCopyText({ commentsUrl: 'https://lobste.rs/s/xff77a/a_slug', isSelfPost: true }))
+      .toBe('Lobsters discussion: https://lobste.rs/s/xff77a/a_slug');
   });
 
   test('nothing for no item', () => {

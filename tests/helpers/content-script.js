@@ -76,7 +76,7 @@ export function listPage(rows) {
 }
 
 /** One Lobsters story, in the shape the site serves. */
-export function lobstersStory({ id, title, href, domain, comments = 'no comments' }) {
+export function lobstersStory({ id, title, href, domain, comments = 'no comments', slug = 'a_slug' }) {
   const domainLink = domain ? `<a class="domain" href="/domains/${domain}">${domain}</a>` : '';
   return `
     <li id="story_${id}" data-shortid="${id}" class="story">
@@ -91,12 +91,12 @@ export function lobstersStory({ id, title, href, domain, comments = 'no comments
           <div class="byline">
             <a class="u-author h-card" href="/~someone">someone</a>
             <span class="comments_label"><span aria-hidden="true"> | </span>
-              <a role="heading" aria-level="2" href="/s/${id}/a_slug">${comments}</a>
+              <a role="heading" aria-level="2" href="/s/${id}/${slug}">${comments}</a>
             </span>
           </div>
         </div>
       </div>
-      <a href="/s/${id}/a_slug" class="mobile_comments" style="display: none;"><span>0</span></a>
+      <a href="/s/${id}/${slug}" class="mobile_comments" style="display: none;"><span>0</span></a>
     </li>
   `;
 }

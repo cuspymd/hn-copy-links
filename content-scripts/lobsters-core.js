@@ -14,10 +14,38 @@
     return /^[a-z0-9]+$/i.test(id || '') ? id : null;
   }
 
-  // The story page also answers without its slug, and the slug is only a
-  // rendering of the title, so the id alone is the stable link.
-  function buildCommentsUrl(itemId) {
-    return `${LOBSTERS_ORIGIN}/s/${itemId}`;
+  // A story page path: `/s/<id>` with an optional `/<slug>`. Null for anything
+  // else, an off-site link included.
+  function parseStoryPath(url) {
+    try {
+      const parsed = new URL(url, LOBSTERS_ORIGIN);
+      if (parsed.origin !== LOBSTERS_ORIGIN) return null;
+      const [, prefix, id, slug = ''] = parsed.pathname.split('/');
+      if (prefix !== 's' || !id) return null;
+      return { id, slug };
+    } catch (error) {
+      return null;
+    }
+  }
+
+  // The slug the story's own comments link carries. The anchor is there even
+  // on a story with no comments - it reads "no comments" - and only its href
+  // is used.
+  function findSlug(row, itemId) {
+    for (const link of row.querySelectorAll('.comments_label a, a.mobile_comments')) {
+      const path = parseStoryPath(link.getAttribute('href'));
+      if (path?.id === itemId && /^[a-z0-9_-]+$/i.test(path.slug)) return path.slug;
+    }
+    return null;
+  }
+
+  // The slug stays on: logged out, the bare `/s/<id>` is answered from a cache
+  // that stops at the story's first minutes, comments and votes missing, and
+  // whatever opens the pasted link is logged out. Any other path under the id
+  // is served fresh, so a slug gone stale after a title edit still works, and
+  // a story whose slug cannot be read gets the trailing slash alone.
+  function buildCommentsUrl(itemId, slug) {
+    return `${LOBSTERS_ORIGIN}/s/${itemId}/${slug || ''}`;
   }
 
   function toAbsoluteUrl(href, baseUrl) {
@@ -30,18 +58,11 @@
     }
   }
 
-  // A text post points its title at its own story page, but with the slug on:
-  // `/s/<id>/<slug>`. So it is told apart by path, not by an equal string.
+  // A text post points its title at its own story page, with the slug on. So
+  // it is told apart by the path's id, not by an equal string.
   function isOwnStoryPage(url, itemId) {
     if (!url) return true;
-    try {
-      const parsed = new URL(url);
-      if (parsed.origin !== LOBSTERS_ORIGIN) return false;
-      const [, prefix, id] = parsed.pathname.split('/');
-      return prefix === 's' && id === itemId;
-    } catch (error) {
-      return false;
-    }
+    return parseStoryPath(url)?.id === itemId;
   }
 
   /**
@@ -66,7 +87,7 @@
       itemId,
       title,
       articleUrl,
-      commentsUrl: buildCommentsUrl(itemId),
+      commentsUrl: buildCommentsUrl(itemId, findSlug(row, itemId)),
       isSelfPost: isOwnStoryPage(articleUrl, itemId),
     };
   }

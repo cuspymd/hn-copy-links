@@ -487,7 +487,7 @@ describe('on Lobsters', () => {
 
     expect(writeText()).toHaveBeenCalledWith([
       'Article: https://sheets.works/a',
-      'Lobsters discussion: https://lobste.rs/s/lhr4oy',
+      'Lobsters discussion: https://lobste.rs/s/lhr4oy/a_slug',
     ].join('\n'));
   });
 
@@ -497,7 +497,7 @@ describe('on Lobsters', () => {
     buttons()[1].click();
     await flushPromises();
 
-    expect(writeText()).toHaveBeenCalledWith('Lobsters discussion: https://lobste.rs/s/xff77a');
+    expect(writeText()).toHaveBeenCalledWith('Lobsters discussion: https://lobste.rs/s/xff77a/a_slug');
   });
 
   test('stores its marks apart from Hacker News ids', async () => {
@@ -539,7 +539,7 @@ describe('on Lobsters', () => {
     shareButtons()[1].click();
     await flushPromises();
 
-    expect(share).toHaveBeenCalledWith({ text: 'Lobsters discussion: https://lobste.rs/s/xff77a' });
+    expect(share).toHaveBeenCalledWith({ text: 'Lobsters discussion: https://lobste.rs/s/xff77a/a_slug' });
     expect(buttons()[1].classList.contains('hncl-copied')).toBe(true);
   });
 

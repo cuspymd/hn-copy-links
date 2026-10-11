@@ -74,8 +74,13 @@ as a temporary add-on via `about:debugging`.
 - **The discussion link is built, not found.** `buildCommentsUrl` composes
   `item?id=<row id>` from the row's id. Reading the "N comments" anchor instead
   breaks on a submission with no comments, where it reads "discuss". An E2E test
-  covers that row. Lobsters is the same (`/s/<short id>`, and the anchor reads
-  "no comments"); the slug is left off because it is only the title again.
+  covers that row.
+- **Lobsters keeps the slug on the discussion link** (`/s/<id>/<slug>`), read
+  from the comments anchor's href - which is there even when it reads "no
+  comments". Logged out, the bare `/s/<id>` is served from a cache frozen at
+  the story's first minutes, no comments in it, and the AI that opens the
+  pasted link is always logged out. Any other path under the id is fresh, so
+  a story whose slug cannot be read gets `/s/<id>/`, never the bare path.
 - **A Lobsters text post links its own page with the slug on**
   (`/s/<id>/<slug>`), so it cannot be told by comparing with the built link the
   way Hacker News's can. `lobsters-core.js` compares the path's id instead.

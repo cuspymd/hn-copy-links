@@ -21,7 +21,7 @@ title, in the site's own colours and its dark theme:
 
 ```
 Article: https://example.com/holding-up-the-internet
-Lobsters discussion: https://lobste.rs/s/lhr4oy
+Lobsters discussion: https://lobste.rs/s/lhr4oy/people_holding_up_internet
 ```
 
 A text post copies as one line there too. Copied marks are kept per site, so a

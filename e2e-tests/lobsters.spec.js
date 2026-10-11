@@ -16,20 +16,20 @@ test('copies the article and the Lobsters discussion', async ({ lobstersPage }) 
 
   expect(await readClipboard(lobstersPage)).toBe([
     'Article: https://example.com/holding-up-the-internet',
-    'Lobsters discussion: https://lobste.rs/s/aaa111',
+    'Lobsters discussion: https://lobste.rs/s/aaa111/people_holding_up_internet',
   ].join('\n'));
 });
 
 test('copies a discussion link for a story with no comments', async ({ lobstersPage }) => {
   await lobstersPage.locator(BUTTON).nth(1).click();
 
-  expect(await readClipboard(lobstersPage)).toContain('Lobsters discussion: https://lobste.rs/s/bbb222');
+  expect(await readClipboard(lobstersPage)).toContain('Lobsters discussion: https://lobste.rs/s/bbb222/story_nobody_has_discussed_yet');
 });
 
 test('copies one link for a Lobsters text post', async ({ lobstersPage }) => {
   await lobstersPage.locator(BUTTON).nth(2).click();
 
-  expect(await readClipboard(lobstersPage)).toBe('Lobsters discussion: https://lobste.rs/s/ccc333');
+  expect(await readClipboard(lobstersPage)).toBe('Lobsters discussion: https://lobste.rs/s/ccc333/what_are_you_doing_this_week');
 });
 
 test('keeps the mark after a reload, without marking Hacker News', async ({ context, lobstersPage }) => {
